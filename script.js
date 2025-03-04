@@ -1,94 +1,4 @@
-// 📌 Configuração do Firebase (Corrigindo erro "db is not defined")
-const firebaseConfig = {
-    apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
-    authDomain: "app-financas-67485.firebaseapp.com",
-    projectId: "app-financas-67485",
-    storageBucket: "app-financas-67485.firebasestorage.app",
-    messagingSenderId: "518460829487",
-    appId: "1:518460829487:web:dc8c70939e31a35fbebbda",
-    measurementId: "G-S48D0LHFKC"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(); // 🔥 Agora o Firebase está inicializado corretamente!
-
-// 📌 Função para alternar entre abas (Corrigindo erro "mostrarAba is not defined")
-window.mostrarAba = function (aba) {
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.getElementById(aba).style.display = 'block';
-
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[onclick="mostrarAba('${aba}')"]`).classList.add('active');
-
-    // Se a aba "transacoes" for ativada, carregar histórico
-    if (aba === "transacoes") {
-        carregarHistorico();
-    }
-};
-
-// 📌 Garantindo que abrirPopup e fecharPopup funcionam corretamente
-window.abrirPopup = function () {
-    document.getElementById("popup").style.display = "block";
-};
-
-window.fecharPopup = function () {
-    document.getElementById("popup").style.display = "none";
-};
-
-// 📌 Adicionar transação e salvar no Firebase (Corrigindo erro "adicionarTransacao is not defined")
-window.adicionarTransacao = function () {
-    const descricao = document.getElementById("descricao").value;
-    let valor = parseFloat(document.getElementById("valor").value);
-    const tipo = document.getElementById("tipo").value;
-    const data = document.getElementById("data").value;
-    const categoria = document.getElementById("categoria").value;
-
-    if (!descricao || isNaN(valor) || !data || !categoria) {
-        alert("Preencha todos os campos corretamente!");
-        return;
-    }
-
-    if (tipo === "despesa") {
-        valor = -Math.abs(valor);
-    }
-
-    const transacao = { descricao, valor, tipo, data, categoria };
-
-    db.collection("transacoes").add(transacao).then(() => {
-        atualizarResumo();
-        carregarHistorico();
-        fecharPopup();
-    });
-};
-
-// 📌 Atualizar Resumo Financeiro (Corrigindo erro "valores do mês não aparecem")
-window.atualizarResumo = function () {
-    const mes = document.getElementById("filtroMes").value;
-    let saldo = 0, totalReceitas = 0, totalDespesas = 0;
-
-    db.collection("transacoes").get().then(snapshot => {
-        snapshot.docs.forEach(doc => {
-            const { valor, tipo, data } = doc.data();
-            if (typeof data !== "string") return;
-
-            const partesData = data.split("-");
-            if (partesData.length < 3) return;
-
-            const mesTransacao = partesData[1];
-
-            if (mesTransacao === mes) {
-                saldo += valor;
-                tipo === "receita" ? totalReceitas += valor : totalDespesas += valor;
-            }
-        });
-
-        document.getElementById("saldoMes").innerText = `R$ ${saldo.toFixed(2)}`;
-        document.getElementById("totalReceitas").innerText = `R$ ${totalReceitas.toFixed(2)}`;
-        document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
-    });
-};
-
-// 📌 Carregar Histórico de Transações (Corrigindo erro "histórico sumiu")
+// 📌 Carregar Histórico de Transações (Agora filtrando pelo mês correto)
 window.carregarHistorico = function () {
     const mesSelect = document.getElementById("filtroMesTransacoes");
     const categoriaSelect = document.getElementById("filtroCategoria");
@@ -98,7 +8,7 @@ window.carregarHistorico = function () {
         return;
     }
 
-    const mesSelecionado = mesSelect.value;
+    const mesSelecionado = mesSelect.value; // 🔥 AGORA O FILTRO POR MÊS VOLTOU!
     const categoriaSelecionada = categoriaSelect.value;
     const historico = document.getElementById("historico");
 
@@ -124,22 +34,26 @@ window.carregarHistorico = function () {
             const mesTransacao = partesData[1];
             const diaTransacao = partesData[2];
 
+            // 🔥 Agora filtramos pelo mês correto!
+            if (mesTransacao !== mesSelecionado) {
+                return;
+            }
+
+            // Filtrar por categoria se não for "todas"
             if (categoriaSelecionada !== "todas" && categoria !== categoriaSelecionada) {
                 return;
             }
 
-            if (mesTransacao === mesSelecionado) {
-                if (!transacoesPorDia[diaTransacao]) {
-                    transacoesPorDia[diaTransacao] = [];
-                }
-                transacoesPorDia[diaTransacao].push({
-                    descricao, valor, tipo, categoria, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`
-                });
+            if (!transacoesPorDia[diaTransacao]) {
+                transacoesPorDia[diaTransacao] = [];
             }
+            transacoesPorDia[diaTransacao].push({
+                descricao, valor, tipo, categoria, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`
+            });
         });
 
         Object.keys(transacoesPorDia)
-            .sort((a, b) => parseInt(b) - parseInt(a))
+            .sort((a, b) => parseInt(b) - parseInt(a)) // 🔥 Ordena os dias de forma DESCRESCENTE
             .forEach(dia => {
                 const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00");
                 const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()];
@@ -166,11 +80,12 @@ window.carregarHistorico = function () {
                     historico.appendChild(item);
                 });
             });
+    }).catch(error => {
+        console.error("Erro ao carregar histórico:", error);
     });
 };
 
-// 📌 Garantindo que os valores dos meses e histórico carreguem corretamente ao abrir a página
+// 📌 Garantindo que a aba "Transações" carregue o histórico corretamente ao abrir
 document.addEventListener("DOMContentLoaded", () => {
-    atualizarResumo();
     carregarHistorico();
 });
