@@ -1,21 +1,23 @@
-// Verifica se o Firebase foi carregado corretamente
-if (typeof firebase === "undefined") {
-    console.error("Erro: Firebase não foi carregado. Verifique se os scripts do Firebase estão incluídos corretamente no HTML.");
-}
-
-// Configuração do Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
-    authDomain: "app-financas-67485.firebaseapp.com",
-    projectId: "app-financas-67485",
-    storageBucket: "app-financas-67485.firebasestorage.app",
-    messagingSenderId: "518460829487",
-    appId: "518460829487:web:dc8c70939e31a35fbebbda",
-    measurementId: "G-S48D0LHFKC"
-};
-
-// Espera o Firebase carregar antes de inicializar
+// Aguarda o carregamento da página antes de executar o código
 document.addEventListener("DOMContentLoaded", function() {
+
+    // Verifica se o Firebase foi carregado corretamente
+    if (typeof firebase === "undefined") {
+        console.error("Erro: Firebase não foi carregado. Verifique se os scripts do Firebase estão incluídos corretamente no HTML.");
+        return;
+    }
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
+        authDomain: "app-financas-67485.firebaseapp.com",
+        projectId: "app-financas-67485",
+        storageBucket: "app-financas-67485.firebasestorage.app",
+        messagingSenderId: "518460829487",
+        appId: "518460829487:web:dc8c70939e31a35fbebbda",
+        measurementId: "G-S48D0LHFKC"
+    };
+
     // Inicializa Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -86,5 +88,5 @@ document.addEventListener("DOMContentLoaded", function() {
     carregarTransacoes();
 
     // Adiciona evento de clique no botão para evitar erro de referência
-    document.querySelector("button").addEventListener("click", adicionarTransacao);
+    document.getElementById("btnAdicionar").addEventListener("click", adicionarTransacao);
 });
