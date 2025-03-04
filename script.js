@@ -1,3 +1,8 @@
+// Certifique-se de que o Firebase foi carregado antes
+if (typeof firebase === "undefined") {
+    console.error("Erro: Firebase não foi carregado. Verifique a inclusão dos scripts no HTML.");
+}
+
 // Configuração do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
@@ -13,7 +18,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Função para adicionar uma transação no Firestore
+// Função para adicionar uma transação ao Firestore
 function adicionarTransacao() {
     const descricao = document.getElementById("descricao").value;
     const valor = parseFloat(document.getElementById("valor").value);
