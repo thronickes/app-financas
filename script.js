@@ -1,154 +1,91 @@
-// 📌 Configuração do Firebase (Não alterar a inicialização)
+// 🔥 Configuração do Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
-    authDomain: "app-financas-67485.firebaseapp.com",
-    projectId: "app-financas-67485",
-    storageBucket: "app-financas-67485.firebasestorage.app",
-    messagingSenderId: "518460829487",
-    appId: "1:518460829487:web:dc8c70939e31a35fbebbda",
-    measurementId: "G-S48D0LHFKC"
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_STORAGE_BUCKET",
+    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+    appId: "SEU_APP_ID"
 };
 
+// Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(); // 🔥 Agora o Firebase está inicializado corretamente!
+const db = firebase.firestore();
 
-// 📌 Alternar entre abas (Corrigindo erro "mostrarAba is not defined")
-window.mostrarAba = function (aba) {
+// 🔥 Garantir que a função seja carregada corretamente
+function inicializarApp() {
+    atualizarResumo();
+    carregarHistorico();
+}
+
+// 🔥 Alternar entre as abas Principal e Transações
+function mostrarAba(aba) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.getElementById(aba).style.display = 'block';
 
     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`[onclick="mostrarAba('${aba}')"]`).classList.add('active');
+}
 
-    // Se a aba "transacoes" for ativada, carregar histórico
-    if (aba === "transacoes") {
-        carregarHistorico();
-    } else if (aba === "principal") {
-        atualizarResumo();
-    }
-};
-
-// 📌 Garantindo que abrirPopup e fecharPopup funcionam corretamente
-window.abrirPopup = function () {
+// 🔥 Abrir e Fechar Popup
+function abrirPopup() {
     document.getElementById("popup").style.display = "block";
-};
-
-window.fecharPopup = function () {
+}
+function fecharPopup() {
     document.getElementById("popup").style.display = "none";
-};
+}
 
-// 📌 Atualizar Resumo Financeiro (Corrigindo erro "atualizarResumo is not defined")
-window.atualizarResumo = function () {
-    const mes = document.getElementById("filtroMes").value;
-    let saldo = 0, totalReceitas = 0, totalDespesas = 0;
+// 🔥 Atualizar Resumo da Aba Principal
+function atualizarResumo() {
+    let mesSelecionado = document.getElementById("filtroMes").value;
+    let totalReceitas = 0, totalDespesas = 0;
 
     db.collection("transacoes").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
-            const { valor, tipo, data } = doc.data();
-            if (typeof data !== "string") return;
+            let { valor, tipo, data } = doc.data();
+            let mesTransacao = data.split("-")[1];
 
-            const partesData = data.split("-");
-            if (partesData.length < 3) return;
-
-            const mesTransacao = partesData[1];
-
-            if (mesTransacao === mes) {
-                saldo += valor;
-                tipo === "receita" ? totalReceitas += valor : totalDespesas += valor;
+            if (mesTransacao === mesSelecionado) {
+                if (tipo === "receita") totalReceitas += valor;
+                else totalDespesas += valor;
             }
         });
 
-        document.getElementById("saldoMes").innerText = `R$ ${saldo.toFixed(2)}`;
         document.getElementById("totalReceitas").innerText = `R$ ${totalReceitas.toFixed(2)}`;
-        document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
+        document.getElementById("totalDespesas").innerText = `R$ ${totalDespesas.toFixed(2)}`;
+        document.getElementById("saldoMes").innerText = `R$ ${(totalReceitas - totalDespesas).toFixed(2)}`;
     });
-};
+}
 
-// 📌 Carregar Histórico de Transações (Corrigido sem alterar a aba principal)
-window.carregarHistorico = function () {
-    const mesSelect = document.getElementById("filtroMesTransacoes");
-    const categoriaSelect = document.getElementById("filtroCategoria");
-
-    if (!mesSelect || !categoriaSelect) {
-        console.error("Elementos de filtro não encontrados.");
-        return;
-    }
-
-    const mesSelecionado = mesSelect.value; // 🔥 FILTRO POR MÊS VOLTOU!
-    const categoriaSelecionada = categoriaSelect.value;
-    const historico = document.getElementById("historico");
-
-    if (!historico) {
-        console.error("Elemento 'historico' não encontrado.");
-        return;
-    }
-
+// 🔥 Carregar Histórico de Transações na Aba "Transações"
+function carregarHistorico() {
+    let mesSelecionado = document.getElementById("filtroMesTransacoes").value;
+    let historico = document.getElementById("historico");
     historico.innerHTML = "";
 
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
-        let transacoesPorDia = {};
-        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-
         snapshot.docs.forEach(doc => {
-            const { descricao, valor, tipo, data, categoria } = doc.data();
-            if (typeof data !== "string") return;
+            let { descricao, valor, tipo, data } = doc.data();
+            let mesTransacao = data.split("-")[1];
 
-            const partesData = data.split("-");
-            if (partesData.length < 3) return;
-
-            const ano = partesData[0];
-            const mesTransacao = partesData[1];
-            const diaTransacao = partesData[2];
-
-            if (mesTransacao !== mesSelecionado) {
-                return;
+            if (mesTransacao === mesSelecionado) {
+                let cor = tipo === "receita" ? "green" : "red";
+                historico.innerHTML += `<p style="color:${cor}">${descricao} - R$ ${valor.toFixed(2)}</p>`;
             }
-
-            if (categoriaSelecionada !== "todas" && categoria !== categoriaSelecionada) {
-                return;
-            }
-
-            if (!transacoesPorDia[diaTransacao]) {
-                transacoesPorDia[diaTransacao] = [];
-            }
-            transacoesPorDia[diaTransacao].push({
-                descricao, valor, tipo, categoria, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`
-            });
         });
-
-        Object.keys(transacoesPorDia)
-            .sort((a, b) => parseInt(b) - parseInt(a)) // 🔥 Ordena os dias de forma DESCRESCENTE
-            .forEach(dia => {
-                const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00");
-                const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()];
-
-                const tituloDia = document.createElement("h3");
-                tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
-                historico.appendChild(tituloDia);
-
-                transacoesPorDia[dia].forEach(transacao => {
-                    const item = document.createElement("div");
-                    item.classList.add("transacao");
-
-                    let valorClasse = transacao.tipo === "receita" ? "receita" : "despesa";
-                    let valorFormatado = transacao.tipo === "receita" ? 
-                        `+ R$ ${transacao.valor.toFixed(2)}` : 
-                        `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
-
-                    item.innerHTML = `
-                        <div class="descricao"><strong>${transacao.descricao}</strong></div>
-                        <div class="categoria"><small>${transacao.categoria}</small></div>
-                        <div class="valor ${valorClasse}">${valorFormatado}</div>
-                    `;
-
-                    historico.appendChild(item);
-                });
-            });
     });
-};
+}
 
-// 📌 Garantindo que os valores da aba principal e histórico de transações carreguem corretamente
-document.addEventListener("DOMContentLoaded", () => {
-    atualizarResumo();
-    carregarHistorico();
-});
+// 🔥 Adicionar Transação
+function adicionarTransacao() {
+    let descricao = document.getElementById("descricao").value;
+    let valor = parseFloat(document.getElementById("valor").value);
+    let tipo = document.getElementById("tipo").value;
+    let data = document.getElementById("data").value;
+
+    db.collection("transacoes").add({ descricao, valor, tipo, data }).then(() => {
+        fecharPopup();
+        atualizarResumo();
+        carregarHistorico();
+    });
+}
