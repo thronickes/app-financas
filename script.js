@@ -1,4 +1,18 @@
-// 📌 Garantindo que TODAS as funções sejam reconhecidas globalmente
+// 📌 Configuração do Firebase (Corrigindo erro "db is not defined")
+const firebaseConfig = {
+    apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
+    authDomain: "app-financas-67485.firebaseapp.com",
+    projectId: "app-financas-67485",
+    storageBucket: "app-financas-67485.firebasestorage.app",
+    messagingSenderId: "518460829487",
+    appId: "1:518460829487:web:dc8c70939e31a35fbebbda",
+    measurementId: "G-S48D0LHFKC"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore(); // 🔥 Agora o Firebase está inicializado corretamente!
+
+// 📌 Função para alternar entre abas (Corrigindo erro "mostrarAba is not defined")
 window.mostrarAba = function (aba) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.getElementById(aba).style.display = 'block';
@@ -12,7 +26,7 @@ window.mostrarAba = function (aba) {
     }
 };
 
-// 📌 Garantindo que abrirPopup e fecharPopup funcionam
+// 📌 Garantindo que abrirPopup e fecharPopup funcionam corretamente
 window.abrirPopup = function () {
     document.getElementById("popup").style.display = "block";
 };
@@ -21,7 +35,7 @@ window.fecharPopup = function () {
     document.getElementById("popup").style.display = "none";
 };
 
-// 📌 Garantindo que adicionar transação salva no Firebase e carrega os valores corretamente
+// 📌 Adicionar transação e salvar no Firebase (Corrigindo erro "adicionarTransacao is not defined")
 window.adicionarTransacao = function () {
     const descricao = document.getElementById("descricao").value;
     let valor = parseFloat(document.getElementById("valor").value);
@@ -47,7 +61,7 @@ window.adicionarTransacao = function () {
     });
 };
 
-// 📌 Garantindo que atualizarResumo carrega os valores corretamente na aba principal
+// 📌 Atualizar Resumo Financeiro (Corrigindo erro "valores do mês não aparecem")
 window.atualizarResumo = function () {
     const mes = document.getElementById("filtroMes").value;
     let saldo = 0, totalReceitas = 0, totalDespesas = 0;
@@ -74,7 +88,7 @@ window.atualizarResumo = function () {
     });
 };
 
-// 📌 Garantindo que o histórico de transações aparece corretamente
+// 📌 Carregar Histórico de Transações (Corrigindo erro "histórico sumiu")
 window.carregarHistorico = function () {
     const mesSelect = document.getElementById("filtroMesTransacoes");
     const categoriaSelect = document.getElementById("filtroCategoria");
@@ -152,12 +166,10 @@ window.carregarHistorico = function () {
                     historico.appendChild(item);
                 });
             });
-    }).catch(error => {
-        console.error("Erro ao carregar histórico:", error);
     });
 };
 
-// 📌 Garantindo que os valores dos meses e histórico carreguem corretamente
+// 📌 Garantindo que os valores dos meses e histórico carreguem corretamente ao abrir a página
 document.addEventListener("DOMContentLoaded", () => {
     atualizarResumo();
     carregarHistorico();
