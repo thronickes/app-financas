@@ -1,3 +1,15 @@
+// Configuração do Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
+    authDomain: "app-financas-67485.firebaseapp.com",
+    projectId: "app-financas-67485",
+    storageBucket: "app-financas-67485.firebasestorage.app",
+    messagingSenderId: "518460829487",
+    appId: "1:518460829487:web:dc8c70939e31a35fbebbda",
+    measurementId: "G-S48D0LHFKC"
+};
+
+// Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -40,10 +52,12 @@ function carregarHistorico() {
             let valorClasse = tipo === "receita" ? "receita" : "despesa";
 
             item.innerHTML = `
-                <div>
-                    <div class="descricao">${descricao}</div>
+                <div class="descricao">
+                    <strong>${descricao}</strong>
                 </div>
-                <div class="valor ${valorClasse}">R$ ${valor.toFixed(2)}</div>
+                <div class="valor ${valorClasse}">
+                    R$ ${valor.toFixed(2)}
+                </div>
             `;
 
             if (tipo === "receita") saldoAtual += valor;
