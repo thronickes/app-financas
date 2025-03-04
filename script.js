@@ -81,31 +81,34 @@ function carregarHistorico() {
             }
         });
 
-        Object.keys(transacoesPorDia).sort().forEach(dia => {
-            const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta);
-            const nomeDiaSemana = diasSemana[dataObjeto.getDay()];
-            
-            const tituloDia = document.createElement("h3");
-            tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
-            historico.appendChild(tituloDia);
+        // Ordena os dias de forma DESCRESCENTE (últimos dias primeiro)
+        Object.keys(transacoesPorDia)
+            .sort((a, b) => parseInt(b) - parseInt(a))
+            .forEach(dia => {
+                const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00"); // Corrige o fuso horário
+                const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()]; // getUTCDay() para evitar erro de fuso horário
+                
+                const tituloDia = document.createElement("h3");
+                tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
+                historico.appendChild(tituloDia);
 
-            transacoesPorDia[dia].forEach(transacao => {
-                const item = document.createElement("div");
-                item.classList.add("transacao");
+                transacoesPorDia[dia].forEach(transacao => {
+                    const item = document.createElement("div");
+                    item.classList.add("transacao");
 
-                let valorClasse = transacao.tipo === "receita" ? "receita" : "despesa";
-                let valorFormatado = transacao.tipo === "receita" ? 
-                    `+ R$ ${transacao.valor.toFixed(2)}` : 
-                    `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
+                    let valorClasse = transacao.tipo === "receita" ? "receita" : "despesa";
+                    let valorFormatado = transacao.tipo === "receita" ? 
+                        `+ R$ ${transacao.valor.toFixed(2)}` : 
+                        `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
 
-                item.innerHTML = `
-                    <div class="descricao"><strong>${transacao.descricao}</strong></div>
-                    <div class="valor ${valorClasse}">${valorFormatado}</div>
-                `;
+                    item.innerHTML = `
+                        <div class="descricao"><strong>${transacao.descricao}</strong></div>
+                        <div class="valor ${valorClasse}">${valorFormatado}</div>
+                    `;
 
-                historico.appendChild(item);
+                    historico.appendChild(item);
+                });
             });
-        });
     });
 }
 
