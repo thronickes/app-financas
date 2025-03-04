@@ -11,12 +11,65 @@
 <body>
 
     <div class="container">
-        <h1>Minhas Finanças</h1>
-        <div class="saldo">
-            Saldo Atual: R$ <span id="saldo">0,00</span>
+        <!-- Abas -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="mostrarAba('principal')">🏠 Principal</button>
+            <button class="tab-button" onclick="mostrarAba('transacoes')">📜 Transações</button>
         </div>
 
-        <div class="form">
+        <!-- 📌 Aba Principal -->
+        <div id="principal" class="tab-content">
+            <h1>Minhas Finanças</h1>
+            <select id="filtroMes" onchange="atualizarResumo()">
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+
+            <div class="resumo">
+                <div>Saldo do Mês: <span id="saldoMes">R$ 0,00</span></div>
+                <div>Receitas: <span id="totalReceitas">R$ 0,00</span></div>
+                <div>Despesas: <span id="totalDespesas">R$ 0,00</span></div>
+            </div>
+
+            <button class="add-button" onclick="abrirPopup()">+</button>
+        </div>
+
+        <!-- 📌 Aba Transações -->
+        <div id="transacoes" class="tab-content" style="display: none;">
+            <h2>Histórico de Transações</h2>
+            <select id="filtroMesTransacoes" onchange="carregarHistorico()">
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+
+            <div id="historico"></div>
+        </div>
+    </div>
+
+    <!-- 📌 Popup de adicionar transação -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h3>Adicionar Transação</h3>
             <input type="text" id="descricao" placeholder="Descrição">
             <input type="number" id="valor" placeholder="Valor">
             <select id="tipo">
@@ -24,11 +77,9 @@
                 <option value="despesa">Despesa</option>
             </select>
             <input type="date" id="data" value="">
-            <button onclick="adicionarTransacao()">Adicionar</button>
+            <button onclick="adicionarTransacao()">Salvar</button>
+            <button onclick="fecharPopup()">Cancelar</button>
         </div>
-
-        <h2>Histórico</h2>
-        <div id="historico"></div>
     </div>
 
     <script src="script.js"></script>
