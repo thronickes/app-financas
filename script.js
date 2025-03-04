@@ -43,12 +43,7 @@ function adicionarTransacao() {
         valor = -Math.abs(valor);
     }
 
-    const transacao = {
-        descricao,
-        valor,
-        tipo,
-        data
-    };
+    const transacao = { descricao, valor, tipo, data };
 
     db.collection("transacoes").add(transacao).then(() => {
         atualizarResumo();
@@ -63,22 +58,45 @@ function carregarHistorico() {
     historico.innerHTML = "";
 
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
+        let transacoesPorDia = {};
+
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data } = doc.data();
-            
-            let mesTransacao = "00";
-            if (typeof data === "string" && data.includes("-")) {
-                mesTransacao = data.split("-")[1];  
-            }
+            if (!data.includes("-")) return;
+
+            const partesData = data.split("-");
+            const mesTransacao = partesData[1];
+            const diaTransacao = partesData[2];
 
             if (mesTransacao === mesSelecionado) {
+                if (!transacoesPorDia[diaTransacao]) {
+                    transacoesPorDia[diaTransacao] = [];
+                }
+                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo });
+            }
+        });
+
+        Object.keys(transacoesPorDia).sort().forEach(dia => {
+            const tituloDia = document.createElement("h3");
+            tituloDia.innerText = `Dia ${dia}`;
+            historico.appendChild(tituloDia);
+
+            transacoesPorDia[dia].forEach(transacao => {
                 const item = document.createElement("div");
                 item.classList.add("transacao");
-                let valorClasse = tipo === "receita" ? "receita" : "despesa";
-                let valorFormatado = tipo === "receita" ? `+ R$ ${valor.toFixed(2)}` : `- R$ ${Math.abs(valor).toFixed(2)}`;
-                item.innerHTML = `<strong>${descricao}</strong> - <span class="${valorClasse}">${valorFormatado}</span>`;
+
+                let valorClasse = transacao.tipo === "receita" ? "receita" : "despesa";
+                let valorFormatado = transacao.tipo === "receita" ? 
+                    `+ R$ ${transacao.valor.toFixed(2)}` : 
+                    `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
+
+                item.innerHTML = `
+                    <div class="descricao"><strong>${transacao.descricao}</strong></div>
+                    <div class="valor ${valorClasse}">${valorFormatado}</div>
+                `;
+
                 historico.appendChild(item);
-            }
+            });
         });
     });
 }
@@ -90,10 +108,9 @@ function atualizarResumo() {
     db.collection("transacoes").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
             const { valor, tipo, data } = doc.data();
-            let mesTransacao = "00";
-            if (typeof data === "string" && data.includes("-")) {
-                mesTransacao = data.split("-")[1];
-            }
+            if (!data.includes("-")) return;
+
+            const mesTransacao = data.split("-")[1];
 
             if (mesTransacao === mes) {
                 saldo += valor;
