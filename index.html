@@ -51,15 +51,6 @@
                 <option value="04">Abril</option>
                 <option value="05">Maio</option>
             </select>
-            <select id="filtroCategoria" onchange="carregarHistorico()">
-                <option value="todas">Todas</option>
-                <option value="Alimentação">Alimentação</option>
-                <option value="Transporte">Transporte</option>
-                <option value="Moradia">Moradia</option>
-                <option value="Lazer">Lazer</option>
-                <option value="Saúde">Saúde</option>
-                <option value="Outros">Outros</option>
-            </select>
             <div id="historico"></div>
         </div>
 
@@ -74,14 +65,6 @@
                     <option value="despesa">Despesa</option>
                 </select>
                 <input type="date" id="data">
-                <select id="categoria">
-                    <option value="Alimentação">Alimentação</option>
-                    <option value="Transporte">Transporte</option>
-                    <option value="Moradia">Moradia</option>
-                    <option value="Lazer">Lazer</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Outros">Outros</option>
-                </select>
                 <button onclick="adicionarTransacao()">Salvar</button>
                 <button onclick="fecharPopup()">Cancelar</button>
             </div>
