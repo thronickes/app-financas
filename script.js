@@ -59,15 +59,17 @@ function carregarHistorico() {
 
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
         let transacoesPorDia = {};
+        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data } = doc.data();
             
-            if (typeof data !== "string") return;  // Evita erro se data não for string
+            if (typeof data !== "string") return; // Evita erro se data não for string
 
             const partesData = data.split("-");
             if (partesData.length < 3) return; // Evita erro se a data não estiver no formato esperado
 
+            const ano = partesData[0];
             const mesTransacao = partesData[1];
             const diaTransacao = partesData[2];
 
@@ -75,13 +77,16 @@ function carregarHistorico() {
                 if (!transacoesPorDia[diaTransacao]) {
                     transacoesPorDia[diaTransacao] = [];
                 }
-                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo });
+                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}` });
             }
         });
 
         Object.keys(transacoesPorDia).sort().forEach(dia => {
+            const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta);
+            const nomeDiaSemana = diasSemana[dataObjeto.getDay()];
+            
             const tituloDia = document.createElement("h3");
-            tituloDia.innerText = `Dia ${dia}`;
+            tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
             historico.appendChild(tituloDia);
 
             transacoesPorDia[dia].forEach(transacao => {
