@@ -30,15 +30,22 @@ function adicionarTransacao() {
         return;
     }
 
-    // Adiciona a transação à lista (não salva ainda)
-    transacoes.push({ descricao, valor, tipo });
-
-    atualizarTela();
-
-    // Limpa os campos após adicionar
-    document.getElementById("descricao").value = "";
-    document.getElementById("valor").value = "";
+    // Adiciona no Firestore
+    db.collection("transacoes").add({
+        descricao,
+        valor,
+        tipo,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        console.log("Transação adicionada!");
+        carregarTransacoes(); // Atualiza a lista na tela
+        document.getElementById("descricao").value = "";
+        document.getElementById("valor").value = "";
+    }).catch((error) => {
+        console.error("Erro ao adicionar transação: ", error);
+    });
 }
+
 
 // Função para atualizar a interface com as transações
 function atualizarTela() {
