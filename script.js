@@ -1,3 +1,21 @@
+// Configuração do Firebase (substitua pelos seus valores reais)
+const firebaseConfig = {
+    apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
+    authDomain: "app-financas-67485.firebaseapp.com",
+    projectId: "app-financas-67485",
+    storageBucket: "app-financas-67485.firebasestorage.app",
+    messagingSenderId: "518460829487",
+    appId: "518460829487:web:dc8c70939e31a35fbebbda",
+    measurementId: "G-S48D0LHFKC"
+};
+
+// Inicializa Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+
+
+
 // Lista de transações (não salva, apenas funciona enquanto o app está aberto)
 let transacoes = [];
 
