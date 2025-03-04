@@ -1,3 +1,4 @@
+/* Reset básico */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -6,6 +7,7 @@ body {
     padding: 0;
 }
 
+/* Container principal */
 .container {
     max-width: 400px;
     margin: 20px auto;
@@ -15,6 +17,7 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilização das abas */
 .tabs {
     display: flex;
     justify-content: space-around;
@@ -27,6 +30,8 @@ body {
     cursor: pointer;
     border: none;
     background-color: #ccc;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .tab-button.active {
@@ -34,12 +39,21 @@ body {
     color: white;
 }
 
-.resumo div {
-    margin: 10px;
+/* Estilização do resumo financeiro */
+.resumo {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
     font-size: 18px;
     font-weight: bold;
 }
 
+.resumo div {
+    margin: 10px;
+}
+
+/* Botão de adicionar transação */
 .add-button {
     position: fixed;
     bottom: 20px;
@@ -53,9 +67,46 @@ body {
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
 }
 
-/* Popup */
+.add-button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilização das transações */
+.transacao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    flex-direction: column;
+}
+
+.transacao .descricao {
+    font-weight: bold;
+}
+
+.transacao .valor {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.receita {
+    color: green;
+}
+
+.despesa {
+    color: red;
+}
+
+/* Estilização do popup */
 .popup {
     display: none;
     position: fixed;
@@ -72,4 +123,35 @@ body {
     margin: 15% auto;
     width: 80%;
     text-align: center;
+    border-radius: 10px;
+}
+
+.popup-content input,
+.popup-content select,
+.popup-content button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.popup-content button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+.popup-content button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .container {
+        width: 90%;
+    }
 }
