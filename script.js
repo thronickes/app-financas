@@ -62,9 +62,12 @@ function carregarHistorico() {
 
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data } = doc.data();
-            if (!data.includes("-")) return;
+            
+            if (typeof data !== "string") return;  // Evita erro se data não for string
 
             const partesData = data.split("-");
+            if (partesData.length < 3) return; // Evita erro se a data não estiver no formato esperado
+
             const mesTransacao = partesData[1];
             const diaTransacao = partesData[2];
 
@@ -108,9 +111,12 @@ function atualizarResumo() {
     db.collection("transacoes").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
             const { valor, tipo, data } = doc.data();
-            if (!data.includes("-")) return;
+            if (typeof data !== "string") return;  
 
-            const mesTransacao = data.split("-")[1];
+            const partesData = data.split("-");
+            if (partesData.length < 3) return;  
+
+            const mesTransacao = partesData[1];
 
             if (mesTransacao === mes) {
                 saldo += valor;
