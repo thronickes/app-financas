@@ -1,3 +1,4 @@
+// Configuração do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
     authDomain: "app-financas-67485.firebaseapp.com",
@@ -46,7 +47,7 @@ function adicionarTransacao() {
         descricao,
         valor,
         tipo,
-        data: firebase.firestore.Timestamp.fromDate(new Date(data))
+        data
     };
 
     db.collection("transacoes").add(transacao).then(() => {
@@ -64,8 +65,11 @@ function carregarHistorico() {
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data } = doc.data();
-            const dataFormatada = data.toDate().toISOString().split("T")[0]; 
-            const mesTransacao = dataFormatada.split("-")[1];
+            
+            let mesTransacao = "00";
+            if (typeof data === "string" && data.includes("-")) {
+                mesTransacao = data.split("-")[1];  
+            }
 
             if (mesTransacao === mesSelecionado) {
                 const item = document.createElement("div");
@@ -80,7 +84,27 @@ function carregarHistorico() {
 }
 
 function atualizarResumo() {
-    carregarHistorico();
+    const mes = document.getElementById("filtroMes").value;
+    let saldo = 0, totalReceitas = 0, totalDespesas = 0;
+
+    db.collection("transacoes").get().then(snapshot => {
+        snapshot.docs.forEach(doc => {
+            const { valor, tipo, data } = doc.data();
+            let mesTransacao = "00";
+            if (typeof data === "string" && data.includes("-")) {
+                mesTransacao = data.split("-")[1];
+            }
+
+            if (mesTransacao === mes) {
+                saldo += valor;
+                tipo === "receita" ? totalReceitas += valor : totalDespesas += valor;
+            }
+        });
+
+        document.getElementById("saldoMes").innerText = `R$ ${saldo.toFixed(2)}`;
+        document.getElementById("totalReceitas").innerText = `R$ ${totalReceitas.toFixed(2)}`;
+        document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
