@@ -1,100 +1,36 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Finanças</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .saldo { background: green; color: white; padding: 10px; display: inline-block; border-radius: 5px; }
-        input, select, button { margin: 5px; padding: 10px; }
-    </style>
 </head>
 <body>
 
-    <h1>Minhas Finanças</h1>
-    <div class="saldo">Saldo Atual: R$ <span id="saldo">0,00</span></div>
-    <br><br>
+    <div class="container">
+        <h1>Minhas Finanças</h1>
+        <div class="saldo">
+            Saldo Atual: R$ <span id="saldo">0,00</span>
+        </div>
 
-    <input type="text" id="descricao" placeholder="Descrição">
-    <input type="number" id="valor" placeholder="Valor">
-    <select id="tipo">
-        <option value="receita">Receita</option>
-        <option value="despesa">Despesa</option>
-    </select>
-    <button onclick="adicionarTransacao()">Adicionar</button>
+        <div class="form">
+            <input type="text" id="descricao" placeholder="Descrição">
+            <input type="number" id="valor" placeholder="Valor">
+            <select id="tipo">
+                <option value="receita">Receita</option>
+                <option value="despesa">Despesa</option>
+            </select>
+            <button onclick="adicionarTransacao()">Adicionar</button>
+        </div>
 
-    <h2>Histórico</h2>
-    <ul id="historico"></ul>
+        <h2>Histórico</h2>
+        <div id="historico"></div>
+    </div>
 
-    <script>
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
-            authDomain: "app-financas-67485.firebaseapp.com",
-            projectId: "app-financas-67485",
-            storageBucket: "app-financas-67485.firebasestorage.app",
-            messagingSenderId: "518460829487",
-            appId: "1:518460829487:web:dc8c70939e31a35fbebbda",
-            measurementId: "G-S48D0LHFKC"
-        };
-
-        // Inicializa o Firebase corretamente
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        let saldoAtual = 0;
-
-        function atualizarSaldo() {
-            document.getElementById("saldo").innerText = saldoAtual.toFixed(2);
-        }
-
-        function adicionarTransacao() {
-            const descricao = document.getElementById("descricao").value;
-            const valor = parseFloat(document.getElementById("valor").value);
-            const tipo = document.getElementById("tipo").value;
-
-            if (!descricao || isNaN(valor)) {
-                alert("Preencha todos os campos corretamente!");
-                return;
-            }
-
-            const transacao = { descricao, valor, tipo, data: new Date() };
-
-            db.collection("transacoes").add(transacao).then(() => {
-                if (tipo === "receita") saldoAtual += valor;
-                else saldoAtual -= valor;
-
-                atualizarSaldo();
-                carregarHistorico();
-            });
-        }
-
-        function carregarHistorico() {
-            document.getElementById("historico").innerHTML = "";
-            db.collection("transacoes").orderBy("data", "desc").get().then((querySnapshot) => {
-                saldoAtual = 0;
-                querySnapshot.forEach((doc) => {
-                    const { descricao, valor, tipo } = doc.data();
-                    const item = document.createElement("li");
-                    item.textContent = `${descricao} - R$ ${valor.toFixed(2)} (${tipo})`;
-
-                    if (tipo === "receita") saldoAtual += valor;
-                    else saldoAtual -= valor;
-
-                    document.getElementById("historico").appendChild(item);
-                });
-                atualizarSaldo();
-            });
-        }
-
-        carregarHistorico();
-    </script>
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
