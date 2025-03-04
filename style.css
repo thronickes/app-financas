@@ -49,29 +49,16 @@ body {
     font-weight: bold;
 }
 
-.resumo div {
-    margin: 10px;
+.receitas {
+    color: green;
 }
 
-/* Botão de adicionar transação */
-.add-button {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #007bff;
-    color: white;
-    font-size: 24px;
-    border: none;
-    padding: 15px;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    transition: 0.3s;
+.despesas {
+    color: red;
 }
 
-.add-button:hover {
-    background-color: #0056b3;
+.saldoMes {
+    font-weight: bold;
 }
 
 /* Estilização das transações */
@@ -87,71 +74,4 @@ body {
     width: 90%;
     max-width: 400px;
     flex-direction: column;
-}
-
-.transacao .descricao {
-    font-weight: bold;
-}
-
-.transacao .valor {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.receita {
-    color: green;
-}
-
-.despesa {
-    color: red;
-}
-
-/* Estilização do popup */
-.popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.popup-content {
-    background: white;
-    padding: 20px;
-    margin: 15% auto;
-    width: 80%;
-    text-align: center;
-    border-radius: 10px;
-}
-
-.popup-content input,
-.popup-content select,
-.popup-content button {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.popup-content button {
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border: none;
-}
-
-.popup-content button:hover {
-    background-color: #0056b3;
-}
-
-/* Responsividade */
-@media (max-width: 480px) {
-    .container {
-        width: 90%;
-    }
 }
