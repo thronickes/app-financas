@@ -11,13 +11,11 @@
 <body>
 
     <div class="container">
-        <!-- Abas -->
         <div class="tabs">
             <button class="tab-button active" onclick="mostrarAba('principal')">🏠 Principal</button>
             <button class="tab-button" onclick="mostrarAba('transacoes')">📜 Transações</button>
         </div>
 
-        <!-- 📌 Aba Principal -->
         <div id="principal" class="tab-content">
             <h1>Minhas Finanças</h1>
             <select id="filtroMes" onchange="atualizarResumo()">
@@ -36,16 +34,14 @@
             </select>
 
             <div class="resumo">
+                <div class="receitas">⬆️ Receitas: <span id="totalReceitas">R$ 0,00</span></div>
+                <div class="despesas">⬇️ Despesas: <span id="totalDespesas">R$ 0,00</span></div>
                 <div class="saldoMes">Saldo do Mês: <span id="saldoMes">R$ 0,00</span></div>
-                <div class="receitas"><span>⬆️</span> Receitas: <span id="totalReceitas">R$ 0,00</span></div>
-                <div class="despesas"><span>⬇️</span> Despesas: <span id="totalDespesas">R$ 0,00</span></div>
-                
             </div>
 
             <button class="add-button" onclick="abrirPopup()">+</button>
         </div>
 
-        <!-- 📌 Aba Transações -->
         <div id="transacoes" class="tab-content" style="display: none;">
             <h2>Histórico de Transações</h2>
             <select id="filtroMesTransacoes" onchange="carregarHistorico()">
@@ -67,7 +63,6 @@
         </div>
     </div>
 
-    <!-- 📌 Popup de adicionar transação -->
     <div id="popup" class="popup">
         <div class="popup-content">
             <h3>Adicionar Transação</h3>
