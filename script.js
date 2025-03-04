@@ -1,4 +1,4 @@
-// Configuração do Firebase (substitua pelos seus valores reais)
+// Configuração do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
     authDomain: "app-financas-67485.firebaseapp.com",
@@ -13,13 +13,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-
-
-
-// Lista de transações (não salva, apenas funciona enquanto o app está aberto)
-let transacoes = [];
-
-// Função para adicionar uma nova transação
+// Função para adicionar uma transação no Firestore
 function adicionarTransacao() {
     const descricao = document.getElementById("descricao").value;
     const valor = parseFloat(document.getElementById("valor").value);
@@ -30,7 +24,6 @@ function adicionarTransacao() {
         return;
     }
 
-    // Adiciona no Firestore
     db.collection("transacoes").add({
         descricao,
         valor,
@@ -46,34 +39,41 @@ function adicionarTransacao() {
     });
 }
 
+// Função para carregar as transações do Firestore
+function carregarTransacoes() {
+    db.collection("transacoes").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
+        const lista = document.getElementById("lista-transacoes");
+        const saldoEl = document.getElementById("saldo");
 
-// Função para atualizar a interface com as transações
-function atualizarTela() {
-    const lista = document.getElementById("lista-transacoes");
-    const saldoEl = document.getElementById("saldo");
+        lista.innerHTML = ""; // Limpa a lista antes de carregar
 
-    lista.innerHTML = ""; // Limpa a lista para não duplicar
+        let saldo = 0;
 
-    let saldo = 0;
+        querySnapshot.forEach((doc) => {
+            const transacao = doc.data();
+            const item = document.createElement("li");
+            item.classList.add(transacao.tipo);
+            item.innerHTML = `
+                ${transacao.descricao} - R$ ${transacao.valor.toFixed(2)}
+                <button onclick="removerTransacao('${doc.id}')">X</button>
+            `;
 
-    transacoes.forEach((transacao, index) => {
-        const item = document.createElement("li");
-        item.classList.add(transacao.tipo);
-        item.innerHTML = `
-            ${transacao.descricao} - R$ ${transacao.valor.toFixed(2)}
-            <button onclick="removerTransacao(${index})">X</button>
-        `;
+            lista.appendChild(item);
+            saldo += transacao.tipo === "receita" ? transacao.valor : -transacao.valor;
+        });
 
-        lista.appendChild(item);
-
-        saldo += transacao.tipo === "receita" ? transacao.valor : -transacao.valor;
+        saldoEl.textContent = `R$ ${saldo.toFixed(2)}`;
     });
-
-    saldoEl.textContent = `R$ ${saldo.toFixed(2)}`;
 }
 
-// Função para remover uma transação
-function removerTransacao(index) {
-    transacoes.splice(index, 1);
-    atualizarTela();
+// Função para remover uma transação do Firestore
+function removerTransacao(id) {
+    db.collection("transacoes").doc(id).delete().then(() => {
+        console.log("Transação removida!");
+    }).catch((error) => {
+        console.error("Erro ao remover transação: ", error);
+    });
 }
+
+// Carregar as transações ao iniciar o app
+carregarTransacoes();
