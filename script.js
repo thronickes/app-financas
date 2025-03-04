@@ -29,6 +29,29 @@ function fecharPopup() {
     document.getElementById("popup").style.display = "none";
 }
 
+function adicionarTransacao() {
+    const descricao = document.getElementById("descricao").value;
+    let valor = parseFloat(document.getElementById("valor").value);
+    const tipo = document.getElementById("tipo").value;
+    const data = document.getElementById("data").value;
+
+    if (!descricao || isNaN(valor) || !data) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+    }
+
+    if (tipo === "despesa") {
+        valor = -Math.abs(valor); 
+    }
+
+    const transacao = { descricao, valor, tipo, data };
+
+    db.collection("transacoes").add(transacao).then(() => {
+        atualizarResumo();
+        fecharPopup();
+    });
+}
+
 function atualizarResumo() {
     const mes = document.getElementById("filtroMes").value;
     let saldo = 0, totalReceitas = 0, totalDespesas = 0;
@@ -36,9 +59,12 @@ function atualizarResumo() {
     db.collection("transacoes").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
             const { valor, tipo, data } = doc.data();
-            if (data.split("-")[1] === mes) {
-                saldo += valor;
-                tipo === "receita" ? totalReceitas += valor : totalDespesas += valor;
+            if (typeof data === "string" && data.includes("-")) {
+                const mesTransacao = data.split("-")[1];
+                if (mesTransacao === mes) {
+                    saldo += valor;
+                    tipo === "receita" ? totalReceitas += valor : totalDespesas += valor;
+                }
             }
         });
         document.getElementById("saldoMes").innerText = `R$ ${saldo.toFixed(2)}`;
