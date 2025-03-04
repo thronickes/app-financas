@@ -1,4 +1,3 @@
-// Configuração do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
     authDomain: "app-financas-67485.firebaseapp.com",
@@ -9,7 +8,6 @@ const firebaseConfig = {
     measurementId: "G-S48D0LHFKC"
 };
 
-// Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -44,7 +42,12 @@ function adicionarTransacao() {
         valor = -Math.abs(valor);
     }
 
-    const transacao = { descricao, valor, tipo, data };
+    const transacao = {
+        descricao,
+        valor,
+        tipo,
+        data: firebase.firestore.Timestamp.fromDate(new Date(data))
+    };
 
     db.collection("transacoes").add(transacao).then(() => {
         atualizarResumo();
@@ -61,7 +64,8 @@ function carregarHistorico() {
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data } = doc.data();
-            const mesTransacao = data.split("-")[1];
+            const dataFormatada = data.toDate().toISOString().split("T")[0]; 
+            const mesTransacao = dataFormatada.split("-")[1];
 
             if (mesTransacao === mesSelecionado) {
                 const item = document.createElement("div");
