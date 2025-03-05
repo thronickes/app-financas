@@ -21,13 +21,12 @@ function mostrarAba(aba) {
 }
 
 function abrirPopup() {
-    // Limpa os campos do formulário antes de abrir o popup
     document.getElementById("descricao").value = "";
     document.getElementById("valor").value = "";
-    document.getElementById("tipo").value = "receita"; // Define o padrão como receita
+    document.getElementById("tipo").value = "receita"; 
     document.getElementById("data").value = "";
+    document.getElementById("categoria").value = "Alimentação"; // Define uma categoria padrão
 
-    // Abre o popup
     document.getElementById("popup").style.display = "block";
 }
 
@@ -40,8 +39,9 @@ function adicionarTransacao() {
     let valor = parseFloat(document.getElementById("valor").value);
     const tipo = document.getElementById("tipo").value;
     const data = document.getElementById("data").value;
+    const categoria = document.getElementById("categoria").value; // Captura a categoria selecionada
 
-    if (!descricao || isNaN(valor) || !data) {
+    if (!descricao || isNaN(valor) || !data || !categoria) {
         alert("Preencha todos os campos corretamente!");
         return;
     }
@@ -50,7 +50,7 @@ function adicionarTransacao() {
         valor = -Math.abs(valor);
     }
 
-    const transacao = { descricao, valor, tipo, data };
+    const transacao = { descricao, valor, tipo, data, categoria };
 
     db.collection("transacoes").add(transacao).then(() => {
         atualizarResumo();
@@ -69,12 +69,12 @@ function carregarHistorico() {
         const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
         snapshot.docs.forEach(doc => {
-            const { descricao, valor, tipo, data } = doc.data();
+            const { descricao, valor, tipo, data, categoria } = doc.data();
             
-            if (typeof data !== "string") return; // Evita erro se data não for string
+            if (typeof data !== "string") return;
 
             const partesData = data.split("-");
-            if (partesData.length < 3) return; // Evita erro se a data não estiver no formato esperado
+            if (partesData.length < 3) return;
 
             const ano = partesData[0];
             const mesTransacao = partesData[1];
@@ -84,16 +84,15 @@ function carregarHistorico() {
                 if (!transacoesPorDia[diaTransacao]) {
                     transacoesPorDia[diaTransacao] = [];
                 }
-                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}` });
+                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`, categoria });
             }
         });
 
-        // Ordena os dias de forma DESCRESCENTE (últimos dias primeiro)
         Object.keys(transacoesPorDia)
             .sort((a, b) => parseInt(b) - parseInt(a))
             .forEach(dia => {
-                const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00"); // Corrige o fuso horário
-                const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()]; // getUTCDay() para evitar erro de fuso horário
+                const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00");
+                const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()];
                 
                 const tituloDia = document.createElement("h3");
                 tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
@@ -109,7 +108,7 @@ function carregarHistorico() {
                         `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
 
                     item.innerHTML = `
-                        <div class="descricao"><strong>${transacao.descricao}</strong></div>
+                        <div class="descricao"><strong>${transacao.descricao}</strong> (${transacao.categoria})</div>
                         <div class="valor ${valorClasse}">${valorFormatado}</div>
                     `;
 
@@ -150,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     atualizarResumo();
 
     const dataAtual = new Date();
-    const mesAtual = (dataAtual.getMonth() + 1).toString().padStart(2, "0"); // Garante formato 01, 02, ..., 12
+    const mesAtual = (dataAtual.getMonth() + 1).toString().padStart(2, "0");
     document.getElementById("filtroMesTransacoes").value = mesAtual;
     carregarHistorico();
 });
