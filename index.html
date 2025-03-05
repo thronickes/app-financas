@@ -34,12 +34,14 @@
             </select>
 
             <div class="resumo">
+                <div class="saldoMes">Saldo do Mês: <span id="saldoMes">R$ 0,00</span></div>
                 <div class="receitas">⬆️ Receitas: <span id="totalReceitas">R$ 0,00</span></div>
                 <div class="despesas">⬇️ Despesas: <span id="totalDespesas">R$ 0,00</span></div>
-                <div class="saldoMes">Saldo do Mês: <span id="saldoMes">R$ 0,00</span></div>
+                
+                
+                <!-- Botão movido para dentro da div.resumo -->
+                <button class="add-button" onclick="abrirPopup()">+</button> 
             </div>
-
-            <button class="add-button" onclick="abrirPopup()">+</button>
         </div>
 
         <div id="transacoes" class="tab-content" style="display: none;">
