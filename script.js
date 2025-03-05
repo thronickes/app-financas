@@ -1,18 +1,23 @@
-// 🔥 Configuração do Firebase
+// 🔥 Configuração do Firebase (com suas credenciais)
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_AUTH_DOMAIN",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_STORAGE_BUCKET",
-    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-    appId: "SEU_APP_ID"
+    apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
+    authDomain: "app-financas-67485.firebaseapp.com",
+    projectId: "app-financas-67485",
+    storageBucket: "app-financas-67485.firebasestorage.app",
+    messagingSenderId: "518460829487",
+    appId: "1:518460829487:web:dc8c70939e31a35fbebbda",
+    measurementId: "G-S48D0LHFKC"
 };
 
-// Inicializar Firebase
+// 🔥 Inicializar Firebase corretamente
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 🔥 Garantir que a função seja carregada corretamente
+// 🔥 Garantir que a função seja carregada corretamente quando a página for aberta
+window.onload = function () {
+    inicializarApp();
+};
+
 function inicializarApp() {
     atualizarResumo();
     carregarHistorico();
@@ -43,7 +48,7 @@ function atualizarResumo() {
     db.collection("transacoes").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
             let { valor, tipo, data } = doc.data();
-            let mesTransacao = data.split("-")[1];
+            let mesTransacao = data.split("-")[1]; // Pega o mês da data
 
             if (mesTransacao === mesSelecionado) {
                 if (tipo === "receita") totalReceitas += valor;
