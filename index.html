@@ -6,12 +6,9 @@
     <title>Minhas Finanças</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- 🔥 Firebase versão correta para navegador -->
+    <!-- 🔥 Firebase (Versão Correta) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-    <!-- 🔥 Carregar script.js APÓS o Firebase -->
-    <script defer src="script.js"></script>
 </head>
 <body>
     <div class="container">
@@ -67,5 +64,8 @@
             </div>
         </div>
     </div>
+
+    <!-- 🔥 Script no final para garantir que carrega depois do HTML -->
+    <script src="script.js"></script>
 </body>
 </html>
