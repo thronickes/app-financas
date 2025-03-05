@@ -6,21 +6,18 @@
     <title>Minhas Finanças</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- 🔥 Firebase carregado antes do script.js -->
+    <!-- 🔥 Carregando Firebase (versão correta) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 
+    <!-- 🔥 Carregando script.js APÓS Firebase -->
     <script defer src="script.js"></script>
 </head>
-<body>
+<body onload="inicializarApp()">
     <div class="container">
         <div class="tabs">
-            <button class="tab-button active" onclick="mostrarAba('principal')">
-                🏠 <b>Principal</b>
-            </button>
-            <button class="tab-button" onclick="mostrarAba('transacoes')">
-                📜 <b>Transações</b>
-            </button>
+            <button class="tab-button active" onclick="mostrarAba('principal')">🏠 <b>Principal</b></button>
+            <button class="tab-button" onclick="mostrarAba('transacoes')">📜 <b>Transações</b></button>
         </div>
 
         <!-- 📌 Aba Principal -->
