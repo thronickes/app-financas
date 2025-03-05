@@ -12,6 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// Alternar entre abas
 function mostrarAba(aba) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.getElementById(aba).style.display = 'block';
@@ -20,6 +21,7 @@ function mostrarAba(aba) {
     document.querySelector(`[onclick="mostrarAba('${aba}')"]`).classList.add('active');
 }
 
+// Controle do popup
 function abrirPopup() {
     document.getElementById("popup").style.display = "block";
 }
@@ -28,6 +30,7 @@ function fecharPopup() {
     document.getElementById("popup").style.display = "none";
 }
 
+// Adicionar transação ao Firebase
 function adicionarTransacao() {
     const descricao = document.getElementById("descricao").value;
     let valor = parseFloat(document.getElementById("valor").value);
@@ -52,6 +55,7 @@ function adicionarTransacao() {
     });
 }
 
+// Carregar histórico de transações
 function carregarHistorico() {
     const mesSelecionado = document.getElementById("filtroMesTransacoes").value;
     const historico = document.getElementById("historico");
@@ -64,10 +68,10 @@ function carregarHistorico() {
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data } = doc.data();
             
-            if (typeof data !== "string") return; // Evita erro se data não for string
+            if (typeof data !== "string") return;
 
             const partesData = data.split("-");
-            if (partesData.length < 3) return; // Evita erro se a data não estiver no formato esperado
+            if (partesData.length < 3) return;
 
             const ano = partesData[0];
             const mesTransacao = partesData[1];
@@ -81,12 +85,12 @@ function carregarHistorico() {
             }
         });
 
-        // Ordena os dias de forma DESCRESCENTE (últimos dias primeiro)
+        // Ordenar os dias do mês em ordem decrescente
         Object.keys(transacoesPorDia)
             .sort((a, b) => parseInt(b) - parseInt(a))
             .forEach(dia => {
-                const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00"); // Corrige o fuso horário
-                const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()]; // getUTCDay() para evitar erro de fuso horário
+                const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00");
+                const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()];
                 
                 const tituloDia = document.createElement("h3");
                 tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
@@ -112,6 +116,7 @@ function carregarHistorico() {
     });
 }
 
+// Atualizar resumo financeiro
 function atualizarResumo() {
     const mes = document.getElementById("filtroMes").value;
     let saldo = 0, totalReceitas = 0, totalDespesas = 0;
@@ -138,6 +143,7 @@ function atualizarResumo() {
     });
 }
 
+// Garantir que o resumo seja carregado ao abrir a página
 document.addEventListener("DOMContentLoaded", () => {
     atualizarResumo();
 });
