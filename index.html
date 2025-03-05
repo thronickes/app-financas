@@ -17,8 +17,7 @@
         </div>
 
         <div id="principal" class="tab-content">
-            <h1>Minhas Finanças</h1>
-            <select id="filtroMes" onchange="atualizarResumo()">
+            <select id="filtroMes" class="filtro-mes" onchange="atualizarResumo()">
                 <option value="01">Janeiro</option>
                 <option value="02">Fevereiro</option>
                 <option value="03">Março</option>
@@ -33,10 +32,20 @@
                 <option value="12">Dezembro</option>
             </select>
 
+            <div class="saldo-container">
+                <p>Saldo em contas</p>
+                <h1 id="saldoMes">R$ 0,00</h1>
+            </div>
+
             <div class="resumo">
-                <div class="receitas">⬆️ Receitas: <span id="totalReceitas">R$ 0,00</span></div>
-                <div class="despesas">⬇️ Despesas: <span id="totalDespesas">R$ 0,00</span></div>
-                <div class="saldoMes">Saldo do Mês: <span id="saldoMes">R$ 0,00</span></div>
+                <div class="info receita">
+                    <span>⬆️ Receitas</span>
+                    <strong id="totalReceitas">R$ 0,00</strong>
+                </div>
+                <div class="info despesa">
+                    <span>⬇️ Despesas</span>
+                    <strong id="totalDespesas">R$ 0,00</strong>
+                </div>
             </div>
 
             <button class="add-button" onclick="abrirPopup()">+</button>
