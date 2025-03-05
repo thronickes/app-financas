@@ -7,16 +7,6 @@ body {
     padding: 0;
 }
 
-/* Container principal */
-.container {
-    max-width: 400px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-
 /* Estilização do resumo financeiro */
 .resumo {
     background: #f8f9fa;
@@ -44,6 +34,29 @@ body {
 
 .add-button:hover {
     background-color: #0056b3;
+}
+
+/* Estilização das transações */
+.transacao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+}
+
+/* Ajuste correto das cores */
+.receita {
+    color: green;
+}
+
+.despesa {
+    color: red;
 }
 
 /* Responsividade */
