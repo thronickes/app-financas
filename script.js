@@ -9,7 +9,7 @@ const firebaseConfig = {
     measurementId: "G-S48D0LHFKC"
 };
 
-// 🔥 Inicializar Firebase APÓS carregamento da página
+// 🔥 Inicializar Firebase corretamente e esperar antes de usar 'db'
 let db;
 window.onload = function () {
     firebase.initializeApp(firebaseConfig);
