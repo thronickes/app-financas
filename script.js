@@ -111,8 +111,13 @@ function carregarHistorico() {
                         `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
 
                     item.innerHTML = `
-                        <div class="descricao"><strong>${transacao.descricao}</strong> (${transacao.categoria})</div>
-                        <div class="valor ${valorClasse}">${valorFormatado}</div>
+                        <div class="descricao">
+                            <strong>${transacao.descricao}</strong>
+                        </div>
+                        <div class="valor-categoria">
+                            <span class="categoria-badge ${transacao.categoria.replace(/\s+/g, '-').toLowerCase()}">${transacao.categoria}</span>
+                            <span class="valor ${valorClasse}">${valorFormatado}</span>
+                        </div>
                     `;
 
                     historico.appendChild(item);
