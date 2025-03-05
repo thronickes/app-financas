@@ -39,7 +39,7 @@ function adicionarTransacao() {
     let valor = parseFloat(document.getElementById("valor").value);
     const tipo = document.getElementById("tipo").value;
     const data = document.getElementById("data").value;
-    const categoria = document.getElementById("categoria").value; // Captura a categoria selecionada
+    const categoria = document.getElementById("categoria").value;
 
     if (!descricao || isNaN(valor) || !data || !categoria) {
         alert("Preencha todos os campos corretamente!");
@@ -108,7 +108,10 @@ function carregarHistorico() {
                         `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
 
                     item.innerHTML = `
-                        <div class="descricao"><strong>${transacao.descricao}</strong> (${transacao.categoria})</div>
+                        <div class="descricao">
+                            <strong>${transacao.descricao}</strong>
+                            <span class="categoria-badge ${transacao.categoria.replace(/\s+/g, '-').toLowerCase()}">${transacao.categoria}</span>
+                        </div>
                         <div class="valor ${valorClasse}">${valorFormatado}</div>
                     `;
 
@@ -143,13 +146,3 @@ function atualizarResumo() {
         document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
     });
 }
-
-// Definir automaticamente o mês atual no filtro de "Transações"
-document.addEventListener("DOMContentLoaded", () => {
-    atualizarResumo();
-
-    const dataAtual = new Date();
-    const mesAtual = (dataAtual.getMonth() + 1).toString().padStart(2, "0");
-    document.getElementById("filtroMesTransacoes").value = mesAtual;
-    carregarHistorico();
-});
