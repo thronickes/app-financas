@@ -40,7 +40,7 @@ body {
     color: white;
 }
 
-/* Filtro de mês no topo */
+/* Filtro de mês */
 .filtro-mes {
     font-size: 16px;
     padding: 5px;
@@ -98,6 +98,62 @@ body {
     color: red;
 }
 
+/* Estilização das transações */
+.transacao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+/* Descrição da transação */
+.transacao .descricao {
+    font-weight: bold;
+    text-align: left;
+}
+
+/* Valor da transação */
+.transacao .valor {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Estilização dos badges de categoria */
+.categoria-badge {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-transform: capitalize;
+    color: white;
+}
+
+/* Cores personalizadas para cada categoria */
+.categoria-badge.alimentação { background-color: #FF5733; }
+.categoria-badge.casa { background-color: #795548; }
+.categoria-badge.conta-pessoal { background-color: #3F51B5; }
+.categoria-badge.educação { background-color: #2196F3; }
+.categoria-badge.empresa { background-color: #9C27B0; }
+.categoria-badge.impostos-e-taxas { background-color: #FF9800; }
+.categoria-badge.investimentos { background-color: #4CAF50; }
+.categoria-badge.lazer { background-color: #E91E63; }
+.categoria-badge.outros { background-color: #9E9E9E; }
+.categoria-badge.roupas { background-color: #673AB7; }
+.categoria-badge.saúde { background-color: #009688; }
+.categoria-badge.salário { background-color: #8BC34A; }
+.categoria-badge.transporte { background-color: #FFEB3B; color: black; }
+
 /* Botão de adicionar transação */
 .add-button {
     display: block;
@@ -117,47 +173,6 @@ body {
 
 .add-button:hover {
     background-color: #0056b3;
-}
-
-/* Estilização do histórico de transações */
-h3 {
-    text-align: left;
-    padding: 10px;
-    margin-top: 20px;
-    font-size: 18px;
-    color: #555;
-}
-
-/* Estilização das transações */
-.transacao {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 10px;
-    margin: 10px auto;
-    border-radius: 5px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 400px;
-    flex-direction: column;
-}
-
-.transacao .descricao {
-    font-weight: bold;
-}
-
-.transacao .valor {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.receita {
-    color: green;
-}
-
-.despesa {
-    color: red;
 }
 
 /* Estilização do popup */
