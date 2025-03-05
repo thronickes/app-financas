@@ -67,13 +67,13 @@ function carregarHistorico() {
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
         let transacoesPorDia = {};
         const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+        let encontrouTransacoes = false;
 
         snapshot.docs.forEach(doc => {
-            const { descricao, valor, tipo, data, categoria } = doc.data();
-            
-            if (typeof data !== "string") return;
+            const transacao = doc.data();
+            if (!transacao.data || typeof transacao.data !== "string") return;
 
-            const partesData = data.split("-");
+            const partesData = transacao.data.split("-");
             if (partesData.length < 3) return;
 
             const ano = partesData[0];
@@ -81,19 +81,31 @@ function carregarHistorico() {
             const diaTransacao = partesData[2];
 
             if (mesTransacao === mesSelecionado) {
+                encontrouTransacoes = true;
                 if (!transacoesPorDia[diaTransacao]) {
                     transacoesPorDia[diaTransacao] = [];
                 }
-                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`, categoria });
+                transacoesPorDia[diaTransacao].push({
+                    descricao: transacao.descricao,
+                    valor: transacao.valor,
+                    tipo: transacao.tipo,
+                    categoria: transacao.categoria || "Outros",
+                    dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`
+                });
             }
         });
+
+        if (!encontrouTransacoes) {
+            historico.innerHTML = `<p>Não há transações para este mês.</p>`;
+            return;
+        }
 
         Object.keys(transacoesPorDia)
             .sort((a, b) => parseInt(b) - parseInt(a))
             .forEach(dia => {
                 const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00");
                 const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()];
-                
+
                 const tituloDia = document.createElement("h3");
                 tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
                 historico.appendChild(tituloDia);
@@ -118,6 +130,9 @@ function carregarHistorico() {
                     historico.appendChild(item);
                 });
             });
+    }).catch(error => {
+        console.error("Erro ao carregar histórico:", error);
+        historico.innerHTML = `<p>Erro ao carregar transações.</p>`;
     });
 }
 
@@ -146,3 +161,13 @@ function atualizarResumo() {
         document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
     });
 }
+
+// Definir automaticamente o mês atual no filtro de "Transações"
+document.addEventListener("DOMContentLoaded", () => {
+    atualizarResumo();
+
+    const dataAtual = new Date();
+    const mesAtual = (dataAtual.getMonth() + 1).toString().padStart(2, "0");
+    document.getElementById("filtroMesTransacoes").value = mesAtual;
+    carregarHistorico();
+});
