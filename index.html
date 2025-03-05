@@ -6,14 +6,14 @@
     <title>Minhas Finanças</title>
     <link rel="stylesheet" href="style.css">
     
-    <!-- 🔥 Carregando Firebase (versão correta) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <!-- 🔥 Firebase versão correta para navegador -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <!-- 🔥 Carregando script.js APÓS Firebase -->
+    <!-- 🔥 Carregar script.js APÓS o Firebase -->
     <script defer src="script.js"></script>
 </head>
-<body onload="inicializarApp()">
+<body>
     <div class="container">
         <div class="tabs">
             <button class="tab-button active" onclick="mostrarAba('principal')">🏠 <b>Principal</b></button>
