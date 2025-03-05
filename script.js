@@ -71,6 +71,7 @@ function carregarHistorico() {
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
         let transacoesPorDia = {};
         const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+        let encontrouTransacoes = false;
 
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data, categoria } = doc.data();
@@ -84,19 +85,25 @@ function carregarHistorico() {
             const diaTransacao = partesData[2];
 
             if (mesTransacao === mesSelecionado) {
+                encontrouTransacoes = true;
                 if (!transacoesPorDia[diaTransacao]) {
                     transacoesPorDia[diaTransacao] = [];
                 }
-                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`, categoria });
+                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, categoria, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}` });
             }
         });
+
+        if (!encontrouTransacoes) {
+            historico.innerHTML = `<p>Não há transações para este mês.</p>`;
+            return;
+        }
 
         Object.keys(transacoesPorDia)
             .sort((a, b) => parseInt(b) - parseInt(a))
             .forEach(dia => {
                 const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00");
                 const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()];
-                
+
                 const tituloDia = document.createElement("h3");
                 tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
                 historico.appendChild(tituloDia);
@@ -123,6 +130,9 @@ function carregarHistorico() {
                     historico.appendChild(item);
                 });
             });
+    }).catch(error => {
+        console.error("Erro ao carregar histórico:", error);
+        historico.innerHTML = `<p>Erro ao carregar transações.</p>`;
     });
 }
 
@@ -151,44 +161,6 @@ function atualizarResumo() {
         document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
 
         atualizarGraficoDespesas();
-    });
-}
-
-// Função para atualizar o gráfico de despesas por categoria
-function atualizarGraficoDespesas() {
-    const mesSelecionado = document.getElementById("filtroMes").value;
-    let despesasPorCategoria = {};
-
-    db.collection("transacoes").get().then(snapshot => {
-        snapshot.docs.forEach(doc => {
-            const { valor, tipo, data, categoria } = doc.data();
-            if (tipo !== "despesa" || typeof data !== "string") return;
-
-            const partesData = data.split("-");
-            if (partesData.length < 3) return;
-
-            if (partesData[1] === mesSelecionado) {
-                if (!despesasPorCategoria[categoria]) {
-                    despesasPorCategoria[categoria] = 0;
-                }
-                despesasPorCategoria[categoria] += Math.abs(valor);
-            }
-        });
-
-        const ctx = document.getElementById("graficoDespesas").getContext("2d");
-        if (graficoDespesas) {
-            graficoDespesas.destroy();
-        }
-        graficoDespesas = new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: Object.keys(despesasPorCategoria),
-                datasets: [{
-                    data: Object.values(despesasPorCategoria),
-                    backgroundColor: ["#FF5733", "#795548", "#3F51B5", "#2196F3", "#9C27B0", "#FF9800", "#4CAF50", "#E91E63", "#9E9E9E"]
-                }]
-            }
-        });
     });
 }
 
