@@ -113,30 +113,29 @@ body {
     position: relative;
 }
 
-/* Descrição da transação */
+/* Ajustando a posição do nome e do valor */
 .transacao .descricao {
     font-weight: bold;
     text-align: left;
+    flex: 1;
 }
 
 /* Valor da transação */
 .transacao .valor {
     font-size: 16px;
     font-weight: bold;
+    margin-right: 10px;
 }
 
 /* Estilização dos badges de categoria */
 .categoria-badge {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 12px;
-    padding: 5px 10px;
-    border-radius: 10px;
+    font-size: 10px; /* Fonte menor */
+    padding: 3px 8px; /* Menor espaçamento interno */
+    border-radius: 8px;
     font-weight: bold;
     text-transform: capitalize;
     color: white;
+    margin-left: 10px;
 }
 
 /* Cores personalizadas para cada categoria */
