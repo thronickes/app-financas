@@ -21,6 +21,13 @@ function mostrarAba(aba) {
 }
 
 function abrirPopup() {
+    // Limpa os campos do formulário antes de abrir o popup
+    document.getElementById("descricao").value = "";
+    document.getElementById("valor").value = "";
+    document.getElementById("tipo").value = "receita"; // Define o padrão como receita
+    document.getElementById("data").value = "";
+
+    // Abre o popup
     document.getElementById("popup").style.display = "block";
 }
 
