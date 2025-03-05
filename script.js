@@ -138,6 +138,12 @@ function atualizarResumo() {
     });
 }
 
+// Definir automaticamente o mês atual no filtro de "Transações"
 document.addEventListener("DOMContentLoaded", () => {
     atualizarResumo();
+
+    const dataAtual = new Date();
+    const mesAtual = (dataAtual.getMonth() + 1).toString().padStart(2, "0"); // Garante formato 01, 02, ..., 12
+    document.getElementById("filtroMesTransacoes").value = mesAtual;
+    carregarHistorico();
 });
