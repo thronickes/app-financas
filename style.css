@@ -40,41 +40,77 @@ body {
     color: white;
 }
 
-/* Estilização do resumo financeiro */
-.resumo {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 5px;
-    margin: 10px 0;
-    font-size: 18px;
+/* Filtro de mês no topo */
+.filtro-mes {
+    font-size: 16px;
+    padding: 5px;
+    border: none;
+    background: transparent;
     font-weight: bold;
 }
 
-.receitas {
+/* Saldo do mês */
+.saldo-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.saldo-container p {
+    font-size: 14px;
+    color: #777;
+    margin: 0;
+}
+
+.saldo-container h1 {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 5px 0;
+    color: black;
+}
+
+/* Resumo de receitas e despesas */
+.resumo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.info {
+    text-align: center;
+    flex: 1;
+    font-size: 16px;
+}
+
+.info strong {
+    display: block;
+    font-size: 18px;
+}
+
+.receita {
     color: green;
 }
 
-.despesas {
+.despesa {
     color: red;
-}
-
-.saldoMes {
-    font-weight: bold;
 }
 
 /* Botão de adicionar transação */
 .add-button {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    display: block;
+    margin: 15px auto 0;
     background-color: #007bff;
     color: white;
-    font-size: 24px;
+    font-size: 22px;
     border: none;
     padding: 15px;
     border-radius: 50%;
     cursor: pointer;
+    width: 50px;
+    height: 50px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     transition: 0.3s;
 }
