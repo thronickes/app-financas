@@ -9,12 +9,12 @@ body {
 
 /* Container principal */
 .container {
-    max-width: 350px;
-    margin: 30px auto;
+    max-width: 400px;
+    margin: 20px auto;
     background: white;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilização das abas */
@@ -40,54 +40,80 @@ body {
     color: white;
 }
 
-/* Topo - Filtro do Mês */
-.top-bar select {
-    font-size: 16px;
-    padding: 5px;
-    border: none;
-    background: transparent;
-    font-weight: bold;
-}
-
-/* Saldo principal */
-.saldo-container {
-    text-align: center;
-    margin-top: 10px;
-}
-
-.saldo-container p {
-    font-size: 14px;
-    color: #777;
-    margin: 0;
-}
-
-.saldo-container h1 {
-    font-size: 26px;
-    font-weight: bold;
-    margin: 5px 0;
-    color: black;
-}
-
-/* Resumo financeiro */
+/* Estilização do resumo financeiro */
 .resumo {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.receitas {
+    color: green;
+}
+
+.despesas {
+    color: red;
+}
+
+.saldoMes {
+    font-weight: bold;
+}
+
+/* Botão de adicionar transação */
+.add-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #007bff;
+    color: white;
+    font-size: 24px;
+    border: none;
+    padding: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
+}
+
+.add-button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilização do histórico de transações */
+h3 {
+    text-align: left;
+    padding: 10px;
+    margin-top: 20px;
+    font-size: 18px;
+    color: #555;
+}
+
+/* Estilização das transações */
+.transacao {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    margin: 15px 0;
+    background: white;
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    flex-direction: column;
 }
 
-.info {
-    text-align: center;
-    flex: 1;
+.transacao .descricao {
+    font-weight: bold;
+}
+
+.transacao .valor {
     font-size: 16px;
-}
-
-.info strong {
-    display: block;
-    font-size: 18px;
+    font-weight: bold;
 }
 
 .receita {
@@ -98,30 +124,47 @@ body {
     color: red;
 }
 
-/* Botão de adicionar transação */
-.add-button {
+/* Estilização do popup */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    margin: 15% auto;
+    width: 80%;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.popup-content input,
+.popup-content select,
+.popup-content button {
     display: block;
-    margin: 15px auto 0;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.popup-content button {
     background-color: #007bff;
     color: white;
-    font-size: 22px;
-    border: none;
-    padding: 15px;
-    border-radius: 50%;
     cursor: pointer;
-    width: 50px;
-    height: 50px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    transition: 0.3s;
+    border: none;
 }
 
-.add-button:hover {
+.popup-content button:hover {
     background-color: #0056b3;
-}
-
-/* Aba Transações */
-#transacoes {
-    display: none;
 }
 
 /* Responsividade */
