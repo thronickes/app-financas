@@ -1,4 +1,4 @@
-// 🔥 Configuração do Firebase (com suas credenciais)
+// 🔥 Configuração do Firebase (com suas credenciais corretas)
 const firebaseConfig = {
     apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
     authDomain: "app-financas-67485.firebaseapp.com",
@@ -9,12 +9,11 @@ const firebaseConfig = {
     measurementId: "G-S48D0LHFKC"
 };
 
-// 🔥 Inicializar Firebase corretamente
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// 🔥 Garantir que a função seja carregada corretamente quando a página for aberta
+// 🔥 Inicializar Firebase APÓS carregamento da página
+let db;
 window.onload = function () {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
     inicializarApp();
 };
 
@@ -48,7 +47,7 @@ function atualizarResumo() {
     db.collection("transacoes").get().then(snapshot => {
         snapshot.docs.forEach(doc => {
             let { valor, tipo, data } = doc.data();
-            let mesTransacao = data.split("-")[1]; // Pega o mês da data
+            let mesTransacao = data.split("-")[1];
 
             if (mesTransacao === mesSelecionado) {
                 if (tipo === "receita") totalReceitas += valor;
