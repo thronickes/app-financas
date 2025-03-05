@@ -1,4 +1,4 @@
-// 🔥 Configuração do Firebase (Corrigida)
+// Configuração do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDYWap5R63y0bCFZfHG1u2rMgUhZSt5xk4",
     authDomain: "app-financas-67485.firebaseapp.com",
@@ -9,20 +9,9 @@ const firebaseConfig = {
     measurementId: "G-S48D0LHFKC"
 };
 
-// 🔥 Inicializar Firebase corretamente e esperar antes de usar 'db'
-let db;
-window.onload = function () {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    inicializarApp();
-};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-function inicializarApp() {
-    atualizarResumo();
-    carregarHistorico();
-}
-
-// 🔥 Alternar entre as abas Principal e Transações
 function mostrarAba(aba) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.getElementById(aba).style.display = 'block';
@@ -31,71 +20,124 @@ function mostrarAba(aba) {
     document.querySelector(`[onclick="mostrarAba('${aba}')"]`).classList.add('active');
 }
 
-// 🔥 Abrir e Fechar Popup
 function abrirPopup() {
     document.getElementById("popup").style.display = "block";
 }
+
 function fecharPopup() {
     document.getElementById("popup").style.display = "none";
 }
 
-// 🔥 Atualizar Resumo da Aba Principal
-function atualizarResumo() {
-    let mesSelecionado = document.getElementById("filtroMes").value;
-    let totalReceitas = 0, totalDespesas = 0;
+function adicionarTransacao() {
+    const descricao = document.getElementById("descricao").value;
+    let valor = parseFloat(document.getElementById("valor").value);
+    const tipo = document.getElementById("tipo").value;
+    const data = document.getElementById("data").value;
 
-    db.collection("transacoes").get().then(snapshot => {
-        snapshot.docs.forEach(doc => {
-            let { valor, tipo, data } = doc.data();
-            
-            // 🔥 Corrigir conversão do Timestamp para String (YYYY-MM-DD)
-            let dataFormatada = data.toDate().toISOString().split("T")[0]; 
-            let mesTransacao = dataFormatada.split("-")[1]; // "03"
+    if (!descricao || isNaN(valor) || !data) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+    }
 
-            if (mesTransacao === mesSelecionado) {
-                if (tipo === "receita") totalReceitas += valor;
-                else totalDespesas += valor;
-            }
-        });
+    if (tipo === "despesa") {
+        valor = -Math.abs(valor);
+    }
 
-        document.getElementById("totalReceitas").innerText = `R$ ${totalReceitas.toFixed(2)}`;
-        document.getElementById("totalDespesas").innerText = `R$ ${totalDespesas.toFixed(2)}`;
-        document.getElementById("saldoMes").innerText = `R$ ${(totalReceitas - totalDespesas).toFixed(2)}`;
+    const transacao = { descricao, valor, tipo, data };
+
+    db.collection("transacoes").add(transacao).then(() => {
+        atualizarResumo();
+        carregarHistorico();
+        fecharPopup();
     });
 }
 
-// 🔥 Carregar Histórico de Transações na Aba "Transações"
 function carregarHistorico() {
-    let mesSelecionado = document.getElementById("filtroMesTransacoes").value;
-    let historico = document.getElementById("historico");
+    const mesSelecionado = document.getElementById("filtroMesTransacoes").value;
+    const historico = document.getElementById("historico");
     historico.innerHTML = "";
 
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
-        snapshot.docs.forEach(doc => {
-            let { descricao, valor, tipo, data } = doc.data();
+        let transacoesPorDia = {};
+        const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
-            // 🔥 Corrigir conversão do Timestamp para String (YYYY-MM-DD)
-            let dataFormatada = data.toDate().toISOString().split("T")[0]; 
-            let mesTransacao = dataFormatada.split("-")[1]; // "03"
+        snapshot.docs.forEach(doc => {
+            const { descricao, valor, tipo, data } = doc.data();
+            
+            if (typeof data !== "string") return; // Evita erro se data não for string
+
+            const partesData = data.split("-");
+            if (partesData.length < 3) return; // Evita erro se a data não estiver no formato esperado
+
+            const ano = partesData[0];
+            const mesTransacao = partesData[1];
+            const diaTransacao = partesData[2];
 
             if (mesTransacao === mesSelecionado) {
-                let cor = tipo === "receita" ? "green" : "red";
-                historico.innerHTML += `<p style="color:${cor}">${descricao} - R$ ${valor.toFixed(2)}</p>`;
+                if (!transacoesPorDia[diaTransacao]) {
+                    transacoesPorDia[diaTransacao] = [];
+                }
+                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}` });
             }
         });
+
+        // Ordena os dias de forma DESCRESCENTE (últimos dias primeiro)
+        Object.keys(transacoesPorDia)
+            .sort((a, b) => parseInt(b) - parseInt(a))
+            .forEach(dia => {
+                const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00"); // Corrige o fuso horário
+                const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()]; // getUTCDay() para evitar erro de fuso horário
+                
+                const tituloDia = document.createElement("h3");
+                tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
+                historico.appendChild(tituloDia);
+
+                transacoesPorDia[dia].forEach(transacao => {
+                    const item = document.createElement("div");
+                    item.classList.add("transacao");
+
+                    let valorClasse = transacao.tipo === "receita" ? "receita" : "despesa";
+                    let valorFormatado = transacao.tipo === "receita" ? 
+                        `+ R$ ${transacao.valor.toFixed(2)}` : 
+                        `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
+
+                    item.innerHTML = `
+                        <div class="descricao"><strong>${transacao.descricao}</strong></div>
+                        <div class="valor ${valorClasse}">${valorFormatado}</div>
+                    `;
+
+                    historico.appendChild(item);
+                });
+            });
     });
 }
 
-// 🔥 Adicionar Transação
-function adicionarTransacao() {
-    let descricao = document.getElementById("descricao").value;
-    let valor = parseFloat(document.getElementById("valor").value);
-    let tipo = document.getElementById("tipo").value;
-    let data = document.getElementById("data").value;
+function atualizarResumo() {
+    const mes = document.getElementById("filtroMes").value;
+    let saldo = 0, totalReceitas = 0, totalDespesas = 0;
 
-    db.collection("transacoes").add({ descricao, valor, tipo, data }).then(() => {
-        fecharPopup();
-        atualizarResumo();
-        carregarHistorico();
+    db.collection("transacoes").get().then(snapshot => {
+        snapshot.docs.forEach(doc => {
+            const { valor, tipo, data } = doc.data();
+            if (typeof data !== "string") return;  
+
+            const partesData = data.split("-");
+            if (partesData.length < 3) return;  
+
+            const mesTransacao = partesData[1];
+
+            if (mesTransacao === mes) {
+                saldo += valor;
+                tipo === "receita" ? totalReceitas += valor : totalDespesas += valor;
+            }
+        });
+
+        document.getElementById("saldoMes").innerText = `R$ ${saldo.toFixed(2)}`;
+        document.getElementById("totalReceitas").innerText = `R$ ${totalReceitas.toFixed(2)}`;
+        document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    atualizarResumo();
+});
