@@ -12,9 +12,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Variável para armazenar o gráfico
-let graficoDespesas = null;
-
 function mostrarAba(aba) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.getElementById(aba).style.display = 'block';
@@ -28,7 +25,7 @@ function abrirPopup() {
     document.getElementById("valor").value = "";
     document.getElementById("tipo").value = "receita"; 
     document.getElementById("data").value = "";
-    document.getElementById("categoria").value = "Alimentação";
+    document.getElementById("categoria").value = "Alimentação"; // Define uma categoria padrão
 
     document.getElementById("popup").style.display = "block";
 }
@@ -42,7 +39,7 @@ function adicionarTransacao() {
     let valor = parseFloat(document.getElementById("valor").value);
     const tipo = document.getElementById("tipo").value;
     const data = document.getElementById("data").value;
-    const categoria = document.getElementById("categoria").value;
+    const categoria = document.getElementById("categoria").value; // Captura a categoria selecionada
 
     if (!descricao || isNaN(valor) || !data || !categoria) {
         alert("Preencha todos os campos corretamente!");
@@ -58,7 +55,6 @@ function adicionarTransacao() {
     db.collection("transacoes").add(transacao).then(() => {
         atualizarResumo();
         carregarHistorico();
-        atualizarGraficoDespesas();
         fecharPopup();
     });
 }
@@ -71,10 +67,10 @@ function carregarHistorico() {
     db.collection("transacoes").orderBy("data").get().then(snapshot => {
         let transacoesPorDia = {};
         const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-        let encontrouTransacoes = false;
 
         snapshot.docs.forEach(doc => {
             const { descricao, valor, tipo, data, categoria } = doc.data();
+            
             if (typeof data !== "string") return;
 
             const partesData = data.split("-");
@@ -85,25 +81,19 @@ function carregarHistorico() {
             const diaTransacao = partesData[2];
 
             if (mesTransacao === mesSelecionado) {
-                encontrouTransacoes = true;
                 if (!transacoesPorDia[diaTransacao]) {
                     transacoesPorDia[diaTransacao] = [];
                 }
-                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, categoria, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}` });
+                transacoesPorDia[diaTransacao].push({ descricao, valor, tipo, dataCompleta: `${ano}-${mesTransacao}-${diaTransacao}`, categoria });
             }
         });
-
-        if (!encontrouTransacoes) {
-            historico.innerHTML = `<p>Não há transações para este mês.</p>`;
-            return;
-        }
 
         Object.keys(transacoesPorDia)
             .sort((a, b) => parseInt(b) - parseInt(a))
             .forEach(dia => {
                 const dataObjeto = new Date(transacoesPorDia[dia][0].dataCompleta + "T00:00:00");
                 const nomeDiaSemana = diasSemana[dataObjeto.getUTCDay()];
-
+                
                 const tituloDia = document.createElement("h3");
                 tituloDia.innerText = `${nomeDiaSemana}, dia ${dia}`;
                 historico.appendChild(tituloDia);
@@ -118,21 +108,13 @@ function carregarHistorico() {
                         `- R$ ${Math.abs(transacao.valor).toFixed(2)}`;
 
                     item.innerHTML = `
-                        <div class="descricao">
-                            <strong>${transacao.descricao}</strong>
-                        </div>
-                        <div class="valor-categoria">
-                            <span class="categoria-badge ${transacao.categoria.replace(/\s+/g, '-').toLowerCase()}">${transacao.categoria}</span>
-                            <span class="valor ${valorClasse}">${valorFormatado}</span>
-                        </div>
+                        <div class="descricao"><strong>${transacao.descricao}</strong> (${transacao.categoria})</div>
+                        <div class="valor ${valorClasse}">${valorFormatado}</div>
                     `;
 
                     historico.appendChild(item);
                 });
             });
-    }).catch(error => {
-        console.error("Erro ao carregar histórico:", error);
-        historico.innerHTML = `<p>Erro ao carregar transações.</p>`;
     });
 }
 
@@ -159,12 +141,15 @@ function atualizarResumo() {
         document.getElementById("saldoMes").innerText = `R$ ${saldo.toFixed(2)}`;
         document.getElementById("totalReceitas").innerText = `R$ ${totalReceitas.toFixed(2)}`;
         document.getElementById("totalDespesas").innerText = `R$ ${Math.abs(totalDespesas).toFixed(2)}`;
-
-        atualizarGraficoDespesas();
     });
 }
 
+// Definir automaticamente o mês atual no filtro de "Transações"
 document.addEventListener("DOMContentLoaded", () => {
     atualizarResumo();
+
+    const dataAtual = new Date();
+    const mesAtual = (dataAtual.getMonth() + 1).toString().padStart(2, "0");
+    document.getElementById("filtroMesTransacoes").value = mesAtual;
     carregarHistorico();
 });
