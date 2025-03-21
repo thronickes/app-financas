@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<body>
+    <div class="theme-switch-wrapper">
+        <span class="slider-icon">☀️</span>
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="container">
+        <nav>
+            <button class="tab active" data-tab="principal">Principal</button>
+            <button class="tab" data-tab="transacoes">Transações</button>
+            <button class="tab" data-tab="dashboards">Dashboards</button>
+            <button class="tab" data-tab="metas">Metas</button>
+        </nav>
+
+        <div class="content">
+            <div class="page active" id="principal">
+                <div class="month-selector">
+                    <select id="month-select">
+                        <option value="0">Janeiro</option>
+                        <option value="1">Fevereiro</option>
+                        <option value="2">Março</option>
+                        <option value="3">Abril</option>
+                        <option value="4">Maio</option>
+                        <option value="5">Junho</option>
+                        <option value="6">Julho</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Setembro</option>
+                        <option value="9">Outubro</option>
+                        <option value="10">Novembro</option>
+                        <option value="11">Dezembro</option>
+                    </select>
+                </div>
+
+                <div class="balance-info">
+                    <p>Saldo líquido (disponível)</p>
+                    <h2 id="total-balance">R$ 0.00</h2>
+                </div>
+
+                <div class="summary">
+                    <div class="income">
+                        <span class="icon">↑</span> Receitas
+                        <h3 id="total-income">R$ 0.00</h3>
+                    </div>
+                    <div class="expense">
+                        <span class="icon">↓</span> Despesas
+                        <h3 id="total-expenses">R$ 0.00</h3>
+                    </div>
+                    <div class="investment">
+                        <span class="icon">💰</span> Investimentos
+                        <h3 id="total-investments">R$ 0.00</h3>
+                    </div>
+                    <div class="total-assets">
+                        <span class="icon">📊</span> Patrimônio Total
+                        <h3 id="total-assets-value">R$ 0.00</h3>
+                    </div>
+                </div>
+
+                <div class="expenses-chart-container">
+                    <h3>Despesas por categoria</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="expenses-chart"></canvas>
+                    </div>
+                    <div id="expenses-legend" class="chart-legend"></div>
+                </div>
+
+                <div class="investments-chart-container">
+                    <h3>Investimentos por categoria</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="investments-chart"></canvas>
+                    </div>
+                    <div id="investments-legend" class="chart-legend"></div>
+                </div>
+
+                <button id="add-transaction" class="add-button">+</button>
+            </div>
+
+            <div class="page" id="transacoes">
+                <h2>Histórico de Transações</h2>
+                <div class="month-selector">
+                    <select id="transaction-month-select">
+                        <option value="0">Janeiro</option>
+                        <option value="1">Fevereiro</option>
+                        <option value="2">Março</option>
+                        <option value="3">Abril</option>
+                        <option value="4">Maio</option>
+                        <option value="5">Junho</option>
+                        <option value="6">Julho</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Setembro</option>
+                        <option value="9">Outubro</option>
+                        <option value="10">Novembro</option>
+                        <option value="11">Dezembro</option>
+                    </select>
+                </div>
+                <div class="transactions-list" id="transactions-container">
+                    <!-- Transactions will be added here dynamically -->
+                </div>
+            </div>
+
+            <div class="page" id="dashboards">
+                <h2>Dashboards Financeiros</h2>
+                <div class="dashboard-container">
+                    <div class="chart-container">
+                        <h3>Resumo Financeiro Anual</h3>
+                        <div class="chart-wrapper annual-chart-wrapper">
+                            <canvas id="annual-summary-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Evolução de Investimentos Anual</h3>
+                        <div class="chart-wrapper annual-chart-wrapper">
+                            <canvas id="investments-line-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Comparação de Despesas por Categoria Anual</h3>
+                        <div class="chart-wrapper annual-chart-wrapper">
+                            <canvas id="annual-expenses-category-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Total de Despesas por Categoria</h3>
+                        <div class="chart-wrapper annual-chart-wrapper">
+                            <canvas id="total-expenses-category-chart"></canvas>
+                            <div id="total-expenses-legend" class="chart-legend"></div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Saldo Acumulado ao Longo do Ano</h3>
+                        <div class="chart-wrapper annual-chart-wrapper">
+                            <canvas id="accumulated-balance-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Evolução do Patrimônio Líquido</h3>
+                        <div class="chart-wrapper annual-chart-wrapper">
+                            <canvas id="net-worth-evolution-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="metas">
+                <h2>Metas Financeiras</h2>
+                <div class="goals-container">
+                    <div class="goals-list" id="goals-container">
+                        <!-- Metas serão adicionadas aqui dinamicamente -->
+                    </div>
+                </div>
+                <button id="add-goal" class="add-button">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="transaction-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Adicionar Transação</h2>
+            <form id="transaction-form">
+                <input type="hidden" id="transaction-id">
+                <input type="text" id="description" placeholder="Descrição" required>
+                <input type="number" id="amount" placeholder="Valor" step="0.01" required>
+                <select id="type" required>
+                    <option value="Receita">Receita</option>
+                    <option value="Despesa">Despesa</option>
+                    <option value="Investimento">Investimento</option>
+                </select>
+                <input type="date" id="date" required>
+                <select id="category" required>
+                    <option value="Alimentação">Alimentação</option>
+                    <option value="Assinaturas">Assinaturas</option>
+                    <option value="Beleza">Beleza</option>
+                    <option value="Casa">Casa</option>
+                    <option value="Combustível">Combustível</option>
+                    <option value="Conta pessoal">Conta pessoal</option>
+                    <option value="Doações">Doações</option>
+                    <option value="Educação">Educação</option>
+                    <option value="Eletrônicos">Eletrônicos</option>
+                    <option value="Empresa">Empresa</option>
+                    <option value="Entretenimento">Entretenimento</option>
+                    <option value="Férias">Férias</option>
+                    <option value="Hobbies">Hobbies</option>
+                    <option value="Impostos e taxas">Impostos e taxas</option>
+                    <option value="Renda Fixa">Renda Fixa</option>
+                    <option value="Ações">Ações</option>
+                    <option value="Fundos Imobiliários">Fundos Imobiliários</option>
+                    <option value="Criptomoedas">Criptomoedas</option>
+                    <option value="Tesouro Direto">Tesouro Direto</option>
+                    <option value="Poupança">Poupança</option>
+                    <option value="Outros Investimentos">Outros Investimentos</option>
+                    <option value="Lazer">Lazer</option>
+                    <option value="Manutenção">Manutenção</option>
+                    <option value="Outros">Outros</option>
+                    <option value="Pets">Pets</option>
+                    <option value="Presentes">Presentes</option>
+                    <option value="Roupas">Roupas</option>
+                    <option value="Salário">Salário</option>
+                    <option value="Saúde">Saúde</option>
+                    <option value="Seguros">Seguros</option>
+                    <option value="Transporte">Transporte</option>
+                </select>
+                <button type="submit" class="save-button">Salvar</button>
+                <button type="button" class="cancel-button">Cancelar</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="delete-confirmation-modal">
+        <div class="modal-content">
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza que deseja excluir esta transação?</p>
+            <input type="hidden" id="delete-transaction-id">
+            <div class="modal-buttons">
+                <button type="button" class="cancel-button" id="cancel-delete">Cancelar</button>
+                <button type="button" class="delete-button" id="confirm-delete">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="goal-modal">
+        <div class="modal-content">
+            <h2 id="goal-modal-title">Adicionar Meta</h2>
+            <form id="goal-form">
+                <input type="hidden" id="goal-id">
+                <input type="text" id="goal-description" placeholder="Descrição da meta" required>
+                <input type="number" id="goal-target" placeholder="Valor alvo" step="0.01" required>
+                <select id="goal-type" required>
+                    <option value="patrimonio">Patrimônio Total</option>
+                    <option value="economia">Economia</option>
+                    <option value="investimento">Investimento</option>
+                </select>
+                <input type="date" id="goal-date" placeholder="Data limite">
+                <button type="submit" class="save-button">Salvar</button>
+                <button type="button" class="cancel-button" id="cancel-goal">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script src="dark-mode.js"></script>
+</body>
+</html>
