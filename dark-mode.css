@@ -100,6 +100,18 @@ nav, .page, .modal-content, .goal-item {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Estilo para abas não selecionadas no modo escuro */
+[data-theme="dark"] .tab:not(.active) {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-bottom: 1px solid #444;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+[data-theme="dark"] .tab:not(.active):hover {
+    background-color: #4a4a4a;
+}
+
 .balance-info p, .transaction-details, .goal-label, .goal-progress-text, .goal-date {
     color: var(--text-secondary);
 }
@@ -160,6 +172,10 @@ form input, form select, #month-select, #transaction-month-select {
     color: #dc3545;
 }
 
+.transaction-amount.investment {
+    color: #2196F3;
+}
+
 .edit-button {
     color: #007bff;
 }
@@ -171,7 +187,9 @@ form input, form select, #month-select, #transaction-month-select {
 /* Ajustes para o modo escuro em dispositivos móveis */
 @media (max-width: 600px) {
     .theme-switch-wrapper {
+        position: fixed;
         top: 10px;
         right: 10px;
+        z-index: 1000;
     }
 }
