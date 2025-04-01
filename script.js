@@ -72,57 +72,61 @@ loadTransactions();
 
 // Função para atualizar todos os gráficos
 function updateAllCharts() {
-    // Verificar se os elementos existem antes de atualizar os gráficos
-    if (annualSummaryChartCanvas) {
-        updateAnnualSummaryChart();
-    }
-    
-    if (investmentsLineChartCanvas) {
-        updateInvestmentsLineChart([
-            'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-        ], transactions
-            .filter(t => t.type === 'Investimento')
-            .reduce((acc, t) => {
-                const month = new Date(t.date).getMonth();
-                acc[month] += t.amount;
-                return acc;
-            }, Array(12).fill(0)));
-    }
-    
-    if (annualExpensesCategoryChartCanvas) {
-        updateAnnualExpensesCategoryChart();
-    }
-    
-    if (totalExpensesCategoryChartCanvas) {
-        updateTotalExpensesCategoryChart();
-    }
-    
-    if (accumulatedBalanceChartCanvas) {
-        updateAccumulatedBalanceChart();
-    }
-    
-    if (netWorthEvolutionChartCanvas) {
-        updateNetWorthEvolutionChart();
-    }
-    
-    // Garantir que os gráficos da aba principal também sejam atualizados
-    if (expensesChartCanvas) {
-        const monthTransactions = transactions.filter(t => {
-            const transactionDate = new Date(t.date);
-            const transactionMonth = transactionDate.getMonth();
-            return transactionMonth === parseInt(currentMonth);
-        });
-        updateExpensesChart(monthTransactions);
-    }
-    
-    if (investmentsChartCanvas) {
-        const monthTransactions = transactions.filter(t => {
-            const transactionDate = new Date(t.date);
-            const transactionMonth = transactionDate.getMonth();
-            return transactionMonth === parseInt(currentMonth);
-        });
-        updateInvestmentsChart(monthTransactions);
+    try {
+        // Verificar se os elementos existem antes de atualizar os gráficos
+        if (annualSummaryChartCanvas) {
+            updateAnnualSummaryChart();
+        }
+        
+        if (investmentsLineChartCanvas) {
+            updateInvestmentsLineChart([
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ], transactions
+                .filter(t => t.type === 'Investimento')
+                .reduce((acc, t) => {
+                    const month = new Date(t.date).getMonth();
+                    acc[month] += t.amount;
+                    return acc;
+                }, Array(12).fill(0)));
+        }
+        
+        if (annualExpensesCategoryChartCanvas) {
+            updateAnnualExpensesCategoryChart();
+        }
+        
+        if (totalExpensesCategoryChartCanvas) {
+            updateTotalExpensesCategoryChart();
+        }
+        
+        if (accumulatedBalanceChartCanvas) {
+            updateAccumulatedBalanceChart();
+        }
+        
+        if (netWorthEvolutionChartCanvas) {
+            updateNetWorthEvolutionChart();
+        }
+        
+        // Garantir que os gráficos da aba principal também sejam atualizados
+        if (expensesChartCanvas) {
+            const monthTransactions = transactions.filter(t => {
+                const transactionDate = new Date(t.date);
+                const transactionMonth = transactionDate.getMonth();
+                return transactionMonth === parseInt(currentMonth);
+            });
+            updateExpensesChart(monthTransactions);
+        }
+        
+        if (investmentsChartCanvas) {
+            const monthTransactions = transactions.filter(t => {
+                const transactionDate = new Date(t.date);
+                const transactionMonth = transactionDate.getMonth();
+                return transactionMonth === parseInt(currentMonth);
+            });
+            updateInvestmentsChart(monthTransactions);
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar gráficos:', error);
     }
 }
 
@@ -337,27 +341,64 @@ function handleDeleteGoal(e) {
 }
 
 // Adiciona event listeners para os botões de navegação
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        const targetId = tab.dataset.tab;
-        
-        // Remove a classe active de todas as tabs e páginas
-        tabs.forEach(t => t.classList.remove('active'));
-        pages.forEach(p => p.classList.remove('active'));
-        
-        // Adiciona a classe active na tab e página selecionada
-        tab.classList.add('active');
-        document.getElementById(targetId).classList.add('active');
-        
-        // Atualiza a UI e os gráficos quando necessário
-        updateUI();
-        if (targetId === 'dashboards') {
-            updateAllCharts();
-        }
-        if (targetId === 'metas') {
-            updateGoalsList();
-        }
+function setupTabNavigation() {
+    // Obter novamente os elementos para garantir que estão disponíveis
+    const tabs = document.querySelectorAll('.tab');
+    const pages = document.querySelectorAll('.page');
+    
+    if (!tabs || !pages) {
+        console.error('Elementos de navegação não encontrados');
+        return;
+    }
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            try {
+                const targetId = tab.dataset.tab;
+                
+                if (!targetId) {
+                    console.error('Tab sem ID de destino');
+                    return;
+                }
+                
+                const targetPage = document.getElementById(targetId);
+                
+                if (!targetPage) {
+                    console.error(`Página de destino não encontrada: ${targetId}`);
+                    return;
+                }
+                
+                // Remove a classe active de todas as tabs e páginas
+                tabs.forEach(t => t.classList.remove('active'));
+                pages.forEach(p => p.classList.remove('active'));
+                
+                // Adiciona a classe active na tab e página selecionada
+                tab.classList.add('active');
+                targetPage.classList.add('active');
+                
+                // Atualiza a UI e os gráficos quando necessário
+                updateUI();
+                if (targetId === 'dashboards') {
+                    updateAllCharts();
+                }
+                if (targetId === 'metas') {
+                    updateGoalsList();
+                }
+                
+                console.log(`Navegado para a aba: ${targetId}`);
+            } catch (error) {
+                console.error('Erro ao navegar entre abas:', error);
+            }
+        });
     });
+}
+
+// Chamar a função de configuração da navegação
+setupTabNavigation();
+
+// Adicionar um event listener para garantir que a navegação seja configurada após o carregamento do DOM
+document.addEventListener('DOMContentLoaded', () => {
+    setupTabNavigation();
 });
 
 // Função para atualizar a lista de metas financeiras
@@ -482,51 +523,77 @@ document.querySelector('.tab[data-tab="principal"]').click();
 
 // Funções auxiliares
 function updateUI() {
-    if (!totalBalance || !totalIncome || !totalExpenses || !totalInvestments || !totalAssetsValue || !transactionsContainer) {
-        console.error('Elementos da interface não encontrados');
-        return;
-    }
+    try {
+        if (!totalBalance || !totalIncome || !totalExpenses || !totalInvestments || !totalAssetsValue) {
+            console.error('Elementos da interface não encontrados');
+            // Tentar obter os elementos novamente
+            const totalBalance = document.getElementById('total-balance');
+            const totalIncome = document.getElementById('total-income');
+            const totalExpenses = document.getElementById('total-expenses');
+            const totalInvestments = document.getElementById('total-investments');
+            const totalAssetsValue = document.getElementById('total-assets-value');
+            
+            if (!totalBalance || !totalIncome || !totalExpenses || !totalInvestments || !totalAssetsValue) {
+                return;
+            }
+        }
 
-    // Garantir que currentMonth seja um número
-    const selectedMonth = parseInt(currentMonth);
-    
-    const monthTransactions = transactions.filter(t => {
-        const transactionDate = new Date(t.date);
-        const transactionMonth = transactionDate.getMonth();
-        return transactionMonth === selectedMonth;
-    });
-
-    const income = monthTransactions
-        .filter(t => t.type === 'Receita')
-        .reduce((sum, t) => sum + t.amount, 0);
-
-    const expenses = monthTransactions
-        .filter(t => t.type === 'Despesa')
-        .reduce((sum, t) => sum + t.amount, 0);
+        // Garantir que currentMonth seja um número
+        const selectedMonth = parseInt(currentMonth);
         
-    const investments = monthTransactions
-        .filter(t => t.type === 'Investimento')
-        .reduce((sum, t) => sum + t.amount, 0);
+        const monthTransactions = transactions.filter(t => {
+            const transactionDate = new Date(t.date);
+            const transactionMonth = transactionDate.getMonth();
+            return transactionMonth === selectedMonth;
+        });
 
-    // Saldo líquido (disponível) = receitas - despesas - investimentos
-    const liquidBalance = income - expenses - investments;
-    
-    // Patrimônio total = saldo líquido + investimentos
-    const totalAssets = liquidBalance + investments;
+        const income = monthTransactions
+            .filter(t => t.type === 'Receita')
+            .reduce((sum, t) => sum + t.amount, 0);
 
-    totalBalance.textContent = formatCurrency(liquidBalance);
-    totalIncome.textContent = formatCurrency(income);
-    totalExpenses.textContent = formatCurrency(expenses);
-    totalInvestments.textContent = formatCurrency(investments);
-    totalAssetsValue.textContent = formatCurrency(totalAssets);
+        const expenses = monthTransactions
+            .filter(t => t.type === 'Despesa')
+            .reduce((sum, t) => sum + t.amount, 0);
+            
+        const investments = monthTransactions
+            .filter(t => t.type === 'Investimento')
+            .reduce((sum, t) => sum + t.amount, 0);
 
-    updateTransactionsList(monthTransactions);
-    updateExpensesChart(monthTransactions);
-    updateInvestmentsChart(monthTransactions);
-    
-    // Sempre atualizar a lista de metas para manter o progresso atualizado
-    // independentemente da aba atual
-    updateGoalsList();
+        // Saldo líquido (disponível) = receitas - despesas - investimentos
+        const liquidBalance = income - expenses - investments;
+        
+        // Patrimônio total = saldo líquido + investimentos
+        const totalAssets = liquidBalance + investments;
+
+        // Atualizar os elementos de texto com os valores calculados
+        if (totalBalance) totalBalance.textContent = formatCurrency(liquidBalance);
+        if (totalIncome) totalIncome.textContent = formatCurrency(income);
+        if (totalExpenses) totalExpenses.textContent = formatCurrency(expenses);
+        if (totalInvestments) totalInvestments.textContent = formatCurrency(investments);
+        if (totalAssetsValue) totalAssetsValue.textContent = formatCurrency(totalAssets);
+
+        // Atualizar a lista de transações se o container existir
+        if (transactionsContainer) {
+            updateTransactionsList(monthTransactions);
+        }
+        
+        // Atualizar os gráficos se os elementos existirem
+        if (expensesChartCanvas) {
+            updateExpensesChart(monthTransactions);
+        }
+        
+        if (investmentsChartCanvas) {
+            updateInvestmentsChart(monthTransactions);
+        }
+        
+        // Sempre atualizar a lista de metas para manter o progresso atualizado
+        // independentemente da aba atual
+        if (goalsContainer) {
+            updateGoalsList();
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar a interface:', error);
+    }
 }
 
 function updateTransactionsList(transactions) {
